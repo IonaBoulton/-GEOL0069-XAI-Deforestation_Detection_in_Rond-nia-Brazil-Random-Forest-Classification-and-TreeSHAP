@@ -58,6 +58,30 @@ emissions against the carbon stored in the forests being monitored.
 
 ## 2. Background & Context
 
+<p align="center">
+  <img src="figures/map-rondonia-Brazil_jpg.webp" 
+       alt="Map of South America with Rondônia highlighted" 
+       width="54%"/>
+  &nbsp;&nbsp;
+  <img src="figures/named.gif" 
+       alt="Detailed map of Rondônia state showing cities, rivers and borders" 
+       width="38%"/>
+</p>
+
+<p align="center">
+  <b>Figure 1.</b> Location of Rondônia state within Brazil and South America (left), 
+  with state-level detail showing major cities, rivers and borders (right). 
+  Rondônia is situated in the south-western Brazilian Amazon, bordering Bolivia 
+  to the south-west. Its capital, Porto Velho, lies along the Madeira River.<br>
+  <sub>
+    Sources: 
+    <a href="https://www.britannica.com/place/Rondonia">Encyclopædia Britannica (2024)</a> · 
+    <a href="http://www.v-brazil.com/tourism/rondonia/map-rondonia.html">V-Brazil Tourism (2024)</a>
+  </sub>
+</p>
+
+---
+
 ### 2.1 · Study Area: Rondônia, Brazil
 
 Rondônia is a state in the **south-western Brazilian Amazon**, bordering Bolivia to the
@@ -73,6 +97,28 @@ of the Amazon basin from the state of Mato Grosso in the east through Rondônia 
 Pará in the north (NASA Earth Observatory, 2006). This arc marks the active agricultural
 frontier where forest is converted to cattle pasture and cropland at a faster rate than
 anywhere else on Earth.
+
+---
+
+<p align="center">
+  <img src="figures/maaproject.org-maap-164-amazon-tipping-point-where-are-we-Map2-Total-Deforestation-AmzBiog-200dpi-Eng.jpg" 
+       alt="Map of total deforestation across the Amazon biome showing concentration in Rondônia" 
+       width="75%"/>
+</p>
+
+<p align="center">
+  <b>Figure 2.</b> Cumulative deforestation across the Amazon biome, 
+  highlighting the intense concentration of forest loss in Rondônia and the 
+  broader southern arc of deforestation. Rondônia consistently ranks among 
+  the most heavily deforested Amazonian states.<br>
+  <sub>
+    Source: 
+    <a href="https://www.maaproject.org/2022/amazon-tipping-point/">
+    MAAP (Monitoring of the Andean Amazon Project), 2022 — MAAP #164</a>
+  </sub>
+</p>
+
+---
 
 ### 2.3 · History of Deforestation in Rondônia
 
