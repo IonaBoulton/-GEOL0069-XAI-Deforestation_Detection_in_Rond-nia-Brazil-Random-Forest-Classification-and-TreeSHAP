@@ -59,7 +59,7 @@ emissions against the carbon stored in the forests being monitored.
 ## 2. Background & Context
 
 <p align="center">
-  <img src="figures/map-rondonia-Brazil_jpg.webp" 
+  <img src="Figures/map-Rondonia-Brazil.jpg.webp" 
        alt="Map of South America with Rondônia highlighted" 
        width="54%"/>
   &nbsp;&nbsp;
