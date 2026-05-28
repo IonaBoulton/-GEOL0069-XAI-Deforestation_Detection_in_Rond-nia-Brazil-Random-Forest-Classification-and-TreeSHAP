@@ -101,7 +101,7 @@ anywhere else on Earth.
 ---
 
 <p align="center">
-  <img src="figures/maaproject.org-maap-164-amazon-tipping-point-where-are-we-Map2-Total-Deforestation-AmzBiog-200dpi-Eng.jpg" 
+  <img src="Figures/maaproject.org-maap-164-amazon-tipping-point-where-are-we-Map2-Total-Deforestation-AmzBiog-200dpi-Eng.jpg" 
        alt="Map of total deforestation across the Amazon biome showing concentration in Rondônia" 
        width="75%"/>
 </p>
