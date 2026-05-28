@@ -63,7 +63,7 @@ emissions against the carbon stored in the forests being monitored.
        alt="Map of South America with Rondônia highlighted" 
        width="54%"/>
   &nbsp;&nbsp;
-  <img src="figures/named.gif" 
+  <img src="Figures/unnamed.gif" 
        alt="Detailed map of Rondônia state showing cities, rivers and borders" 
        width="38%"/>
 </p>
