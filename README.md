@@ -6,7 +6,34 @@ Explainable Forest Loss Detection in Rondônia, Brazil: A Dual-Label Experiment 
   <br>
   <i>Amazon Rainforest Deforestation and logging </i>
 </p>
-COME BACK TO THIS ONCE CODE HAS RUN!!!!!
+
+---
+
+<p align="center">
+
+<details>
+<summary><b>🌿 2019 — Before: Sentinel-2 true-colour composite (click to reveal)</b></summary>
+<br>
+<img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig1_RawDataInspection.png" width="85%"/>
+</details>
+
+<details>
+<summary><b>🟡 2022 — ΔNDVI change signal (click to reveal)</b></summary>
+<br>
+<img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig4_DeltaNDVI_CoreSignal.png" width="85%"/>
+</details>
+
+<details>
+<summary><b>🔴 Random Forest prediction map — forest loss 2019–2022 (click to reveal)</b></summary>
+<br>
+<img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig10_PredictionMap.png" width="85%"/>
+<br><br>
+<i>Green = stable forest · Red = deforested 2019–2022 · Grey = no data · 1,391 km² lost · ≈20.87 Mt CO₂ at risk</i>
+</details>
+
+</p>
+
+---
 
 ## Table of Contents
 1. [Introduction](#1-introduction)
