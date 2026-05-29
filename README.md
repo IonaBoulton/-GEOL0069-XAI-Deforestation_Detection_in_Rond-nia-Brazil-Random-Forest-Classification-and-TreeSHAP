@@ -364,7 +364,22 @@ loss information at **30 m resolution** from 2000 to the present. The loss-year 
 encodes the year in which each pixel first experienced canopy loss, allowing
 deforestation to be temporally attributed at annual resolution.
 
-*Figure X — Hansen GFC dataset structure (see infographic above)*
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_LabelComparison.png" 
+       width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure X — Resolution mismatch: Hansen GFC (30 m) vs Spectral Threshold labels (10 m).</b>
+  The zoomed regions (black boxes) reveal the core labelling challenge. Left: Hansen labels 
+  show large rectangular blocks — artefacts of resampling 30 m Landsat pixels onto the 10 m 
+  Sentinel-2 grid, where 1 Landsat pixel maps to 9 Sentinel-2 pixels. Many spectrally 
+  deforested pixels are mislabelled as stable forest simply because they fall within a 
+  majority-forest Landsat block. Right: Spectral threshold labels at native 10 m resolution 
+  capture fine-grained individual clearings, narrow road incursions and small plot boundaries 
+  invisible at 30 m. This spatial mismatch is the primary cause of Experiment A's near-random 
+  accuracy (OA = 0.538, κ = 0.077) and directly motivates the dual-experiment design.
+</p>
 
 **Why Hansen for Experiment A?**
 
