@@ -517,7 +517,7 @@ training samples excluded from each tree's bootstrap — provides an unbiased in
 validation estimate without requiring a separate validation set.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Random_Forest_Fig.png" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Random_Forest_Figure.png" 
        width="75%"
        alt="How Random Forest works — bootstrap sampling, decision tree anatomy, ensemble vote and key properties"/>
 </p>
