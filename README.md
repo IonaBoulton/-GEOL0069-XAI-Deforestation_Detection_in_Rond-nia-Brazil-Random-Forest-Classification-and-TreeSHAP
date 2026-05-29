@@ -533,6 +533,16 @@ validation estimate without requiring a separate validation set.
   <sub>Breiman (2001). Random Forests. <i>Machine Learning</i>, 45, 5–32.</sub>
 </p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_RF_Rondonia_Dashboard.png" 
+       width="75%"
+       alt="How Random Forest works — bootstrap sampling, decision tree anatomy, ensemble vote and key properties"/>
+</p>
+
+<p align="center">
+  <b>Figure X — Rondonia specific Random forest.</b>
+</p>
+
 #### Model Configuration
 
 ```python
