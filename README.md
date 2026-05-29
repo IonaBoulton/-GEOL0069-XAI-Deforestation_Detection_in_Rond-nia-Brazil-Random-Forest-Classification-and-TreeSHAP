@@ -406,3 +406,142 @@ pixels, creating "blocky" label boundaries that do not align with spectral edges
 the imagery. This misalignment is quantified in Section 7 (Experiment A achieves only
 OA = 0.538) and critically discussed in Section 10.
 
+## 6. Methodological Framework
+
+### 6.1 · Feature Engineering: Spectral Indices & Temporal Deltas
+
+Raw spectral reflectance values alone are poor training features for deforestation 
+detection — they vary with sun angle, atmospheric conditions, and seasonal phenology. 
+Instead, we derive **normalised spectral indices** that are physically meaningful, 
+dimensionless, and largely invariant to these confounds. Eight features are engineered 
+per pixel from the five extracted bands:
+
+#### Normalised Difference Vegetation Index (NDVI)
+
+$$NDVI = \frac{B8 - B4}{B8 + B4}$$
+
+NDVI exploits the strong contrast between near-infrared reflectance (B8), which is high 
+in healthy vegetation due to cell structure scattering, and red reflectance (B4), which 
+is low due to chlorophyll absorption. Dense tropical forest produces NDVI values of 
+0.6–0.9; cleared or degraded land drops to 0.1–0.4. NDVI is computed for both 2019 and 
+2022 epochs, providing a baseline and post-change vegetation measure.
+
+#### Normalised Burn Ratio (NBR)
+
+$$NBR = \frac{B8 - B12}{B8 + B12}$$
+
+NBR contrasts NIR (B8) with shortwave infrared (B12, 2190 nm). Healthy forest has high 
+NIR and low SWIR-2 reflectance, giving strongly positive NBR. Fire-cleared or 
+mechanically cleared land shows sharply reduced NIR and elevated SWIR-2 (exposed soil 
+and char), collapsing NBR toward zero or negative values. In Rondônia, where both 
+fire-preceded and direct mechanical clearing occur (confirmed by the SHAP dependence 
+plot in Section 9), NBR is a critical complementary feature to NDVI.
+
+#### Normalised Difference Water Index (NDWI)
+
+$$NDWI = \frac{B3 - B8}{B3 + B8}$$
+
+NDWI uses green (B3) and NIR (B8) to estimate canopy moisture content. Intact forest 
+maintains high canopy water content, suppressing green reflectance relative to NIR 
+(negative NDWI). Deforestation exposes dry soil and reduces canopy moisture, shifting 
+NDWI toward positive values. NDWI also helps distinguish water bodies from cleared 
+land — important in the Madeira river corridor.
+
+#### Temporal Delta Features
+
+The two most powerful features in the pipeline are the **temporal change signals**:
+
+$$\Delta NDVI = NDVI_{2022} - NDVI_{2019}$$
+
+$$\Delta NBR = NBR_{2022} - NBR_{2019}$$
+
+By differencing the same index across epochs, these features explicitly encode 
+*vegetation loss* (strongly negative ΔNDVI) and *burn or clearing signal* (strongly 
+negative ΔNBR) that occurred between September 2019 and September 2022. Acquiring both 
+scenes in the same calendar month minimises phenological noise — any residual difference 
+is attributable to land cover change rather than seasonal variation. TreeSHAP analysis 
+(Section 9) confirms that ΔNDVI is the dominant driver of model predictions 
+(mean |SHAP| = 0.2494), validating this feature engineering choice.
+
+The full feature vector per pixel is therefore:
+
+| # | Feature | Epoch | Physical meaning |
+|---:|---|---|---|
+| 1 | NDVI | 2019 | Baseline vegetation vigour |
+| 2 | NBR | 2019 | Baseline burn/moisture state |
+| 3 | NDWI | 2019 | Baseline canopy water content |
+| 4 | NDVI | 2022 | Post-change vegetation vigour |
+| 5 | NBR | 2022 | Post-change burn/moisture state |
+| 6 | NDWI | 2022 | Post-change canopy water content |
+| 7 | **ΔNDVI** | 2019→2022 | **Vegetation loss signal** |
+| 8 | **ΔNBR** | 2019→2022 | **Fire / clearing signal** |
+
+All features are computed at native 10 m resolution across the full ~10,980 × 10,980 px 
+tile, processed in 2048 × 2048 px windows to stay within Colab's 12 GB RAM limit.
+
+---
+
+### 6.2 · Random Forest Classification
+
+#### Why Random Forest?
+
+The Random Forest (Breiman, 2001) was selected as the classifier for three reasons:
+
+1. **Proven performance in remote sensing:** Random Forest consistently achieves 
+   high accuracy in land cover classification tasks, with benchmark studies reporting 
+   mean overall accuracies above 94% on well-labelled datasets (Maxwell et al., 2018).
+2. **Robustness to feature correlation:** Several of our 8 features are correlated 
+   (e.g. NDVI 2019 and NDVI 2022, r = 0.87 — see Fig 5). Random Forest's random 
+   feature subsampling at each split (`max_features='sqrt'`) prevents any single 
+   correlated feature from dominating all trees.
+3. **Native compatibility with TreeSHAP:** The TreeSHAP algorithm (Lundberg et al., 
+   2020) computes exact Shapley values for tree ensembles in polynomial time, making 
+   the explainability analysis computationally feasible at scale.
+
+#### How Random Forest Works
+
+A Random Forest is an ensemble of **B decision trees**, each trained on a bootstrap 
+sample of the training data (sampling with replacement). At each node split, only a 
+random subset of √p features is considered (where p = 8 here, so √8 ≈ 3 features per 
+split). This **double randomisation** — in both samples and features — decorrelates 
+the trees so that averaging their predictions reduces variance without increasing bias.
+
+For a pixel **x** with feature vector [NDVI₂₀₁₉, NBR₂₀₁₉, ..., ΔNDVI, ΔNBR], the 
+predicted class is:
+
+$$\hat{y} = \text{mode}\{T_1(\mathbf{x}), T_2(\mathbf{x}), ..., T_B(\mathbf{x})\}$$
+
+where $T_b(\mathbf{x})$ is the prediction of the $b$-th tree. With B = 200 trees, the 
+ensemble is stable and the **Out-of-Bag (OOB) score** — computed on the ~37% of 
+training samples excluded from each tree's bootstrap — provides an unbiased internal 
+validation estimate without requiring a separate validation set.
+
+#### Model Configuration
+
+```python
+RandomForestClassifier
+    n_estimators    = 200,      # 200 trees — stable OOB estimate
+    max_features    = 'sqrt',   # √8 ≈ 3 features per split
+    class_weight    = 'balanced', # corrects for any class imbalance
+    oob_score       = True,     # unbiased internal validation
+    n_jobs          = -1,       # parallelise across all CPU cores
+    random_state    = 42        # reproducibility
+```
+
+#### Evaluation Metrics
+
+Model performance is assessed using four complementary metrics:
+
+| Metric | Formula | Why it matters |
+|---|---|---|
+| **Overall Accuracy (OA)** | (TP + TN) / N | Global correctness |
+| **Cohen's Kappa (κ)** | (OA − P_e) / (1 − P_e) | Corrects for chance agreement — critical for imbalanced classes |
+| **OOB Score** | Internal bootstrap estimate | Unbiased without held-out data |
+| **Producer / User Accuracy** | TP / (TP + FN) · TP / (TP + FP) | Per-class commission and omission errors |
+
+Cohen's Kappa is particularly important here because a classifier that predicts 
+"stable forest" for every pixel would achieve artificially high OA in a scene that 
+is predominantly forest. Kappa corrects for this — Experiment A's κ = 0.077 (near 
+zero) confirms the model is performing at chance level, not just predicting the 
+majority class.
+
