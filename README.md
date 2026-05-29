@@ -516,6 +516,23 @@ ensemble is stable and the **Out-of-Bag (OOB) score** — computed on the ~37% o
 training samples excluded from each tree's bootstrap — provides an unbiased internal 
 validation estimate without requiring a separate validation set.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Random_Forest_Fig.png" 
+       width="75%"
+       alt="How Random Forest works — bootstrap sampling, decision tree anatomy, ensemble vote and key properties"/>
+</p>
+
+<p align="center">
+  <b>Figure X — How Random Forest works.</b>
+  The four-stage pipeline: (1) bootstrap sampling creates B diverse training subsets 
+  with ~37% of pixels held out as OOB validation; (2) each subset grows an independent 
+  decision tree using recursive binary splits with random feature selection (m = √p) 
+  and Gini impurity criterion; (3) all B trees vote and the majority determines the 
+  final class; (4) averaging decorrelated trees gives low bias and low variance — 
+  outperforming any single decision tree.<br>
+  <sub>Breiman (2001). Random Forests. <i>Machine Learning</i>, 45, 5–32.</sub>
+</p>
+
 #### Model Configuration
 
 ```python
