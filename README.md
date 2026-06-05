@@ -588,6 +588,141 @@ The full-scene prediction map and TreeSHAP analysis (Sections 8 and 9) use the E
 
 ---
 
+## 8. Results
+
+### Experiment A — Hansen GFC Labels
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig6A_HansenLabels.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 6A — Experiment A: Hansen Global Forest Change Labels (2019–2022).</b><br>
+  Left: label map showing Hansen deforestation labels resampled to the 10 m Sentinel-2 grid — note the blocky 30 m boundaries. Centre: perfectly balanced training set of 20,000 pixels per class. Right: ΔNDVI violin plot by class — the heavily overlapping distributions reveal why the model struggles, with both stable forest and deforested pixels sharing similar ΔNDVI ranges under Hansen labelling.
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig7A_EvaluationDashboard_A.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 7A — Experiment A Evaluation: Hansen GFC Labels.</b><br>
+  OA = 0.538 · Kappa κ = 0.077 · OOB = 0.537. Raw and normalised confusion matrices alongside the full metrics table. The model correctly classifies only 55.4% of stable forest pixels and 52.3% of deforested pixels — performance indistinguishable from random guessing.
+</p>
+
+| Metric | Forest | Deforested | Overall |
+|---|---|---|---|
+| Precision | 0.537 | 0.540 | — |
+| Recall | 0.553 | 0.523 | — |
+| F1-score | 0.545 | 0.531 | — |
+| Producer acc. | 0.553 | 0.523 | — |
+| User acc. | 0.537 | 0.540 | — |
+| OA | — | — | **0.538** |
+| Kappa κ | — | — | **0.077** |
+| OOB score | — | — | **0.537** |
+
+Experiment A achieves an overall accuracy of 53.8% and a Cohen's Kappa of 0.077 — effectively at chance level. This is not a failure of the Random Forest classifier; it is a label quality problem. The 30 m → 10 m resolution mismatch means that fine-scale clearing events clearly visible in the Sentinel-2 imagery fall within majority-forest Hansen blocks and are mislabelled as stable in the training data. The model is trained on contradictory supervision and cannot discriminate reliably as a result. The ΔNDVI violin plot (Figure 6A, right) makes this concrete — the two classes have heavily overlapping distributions under Hansen labelling, providing the model with no clean spectral boundary to learn from.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig8A_FeatureImportance_A.png" width="85%"/>
+</p>
+
+<p align="center">
+  <b>Figure 8A — RF Feature Importance (Experiment A — Hansen Labels).</b><br>
+  Importance is near-uniform across all 8 features (range: 0.124–0.130), with NDWI 2019 marginally leading. This flat distribution is a hallmark of a model trained on noisy labels — no feature provides reliable discriminative signal, so the forest distributes importance approximately equally across all splits.
+</p>
+
+The feature importance plot (Figure 8A) is diagnostic: all eight features score within a narrow band of 0.124–0.130, with no clear hierarchy. In a well-supervised model, ΔNDVI and ΔNBR should dominate (as confirmed by Experiment B). The flat distribution here reflects the fact that label noise has obscured the physical signal — the model cannot identify which features are informative because the labels themselves are inconsistent.
+
+---
+
+### Experiment B — Spectral Threshold Labels
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig6B_SpectralLabels.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 6B — Experiment B: Spectral Change Labels (ΔNDVI Threshold).</b><br>
+  Left: label map at native 10 m resolution — fine-grained clearing boundaries, narrow road incursions and small plot edges are captured with no resampling artefacts. Centre: balanced training set of 6,000 pixels per class (ambiguous intermediate pixels excluded). Right: ΔNDVI violin plot showing clean class separation by design — stable forest clusters tightly around positive values, deforested pixels around −0.15 to −0.20.
+</p>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig7B_EvaluationDashboard_B.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 7B — Experiment B Evaluation: Spectral Threshold Labels.</b><br>
+  OA = 1.000 · Kappa κ = 1.000 · OOB = 1.000. Perfect classification on the held-out test set with zero misclassified pixels in either class. This result must be interpreted carefully — see note on circularity below.
+</p>
+
+| Metric | Forest | Deforested | Overall |
+|---|---|---|---|
+| Precision | 1.000 | 1.000 | — |
+| Recall | 1.000 | 1.000 | — |
+| F1-score | 1.000 | 1.000 | — |
+| Producer acc. | 1.000 | 1.000 | — |
+| User acc. | 1.000 | 1.000 | — |
+| OA | — | — | **1.000** |
+| Kappa κ | — | — | **1.000** |
+| OOB score | — | — | **1.000** |
+
+Experiment B achieves perfect accuracy across all metrics. The confusion matrix shows zero misclassified pixels in either class on the held-out test set. This result is physically coherent — by excluding ambiguous intermediate pixels from training, the model is presented with only the clearest examples of each class, and the labels are spatially aligned with the features at native 10 m resolution. However, perfect accuracy must be interpreted with caution: because the labels are derived from ΔNDVI thresholding, and ΔNDVI is one of the eight training features, the model is in part learning a smooth approximation of the threshold function. This circularity is discussed further in Section 11.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig8B_FeatureImportance_B.png" width="85%"/>
+</p>
+
+<p align="center">
+  <b>Figure 8B — RF Feature Importance (Experiment B — Spectral Labels).</b><br>
+  ΔNBR (0.374) and ΔNDVI (0.351) together account for 72.5% of total importance — a sharp contrast to the flat distribution in Experiment A. Single-epoch indices contribute marginally. The model has learned that temporal change, not absolute spectral state, is the dominant signal.
+</p>
+
+The feature importance plot (Figure 8B) is the inverse of Experiment A. ΔNBR leads at 0.374, followed by ΔNDVI at 0.351 — together accounting for 72.5% of total importance. All single-epoch indices (NDVI 2019/2022, NBR 2019/2022, NDWI 2019/2022) contribute comparatively little. This hierarchy is exactly what physical reasoning predicts: a pixel's change in vegetation and burn state between 2019 and 2022 is a far stronger indicator of deforestation than its absolute reflectance in either year alone.
+
+---
+
+### Experiment Comparison
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig9_ExperimentComparison.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 9 — Experiment A vs B: Side-by-Side Comparison.</b><br>
+  Left: metric bar chart — every score improves from ~0.54 to 1.00 between experiments. Centre: normalised confusion matrix cells for both experiments — Experiment A shows near-equal spread across all four cells; Experiment B collapses to perfect diagonal. Right: summary property table.
+</p>
+
+| Property | Exp. A (Hansen) | Exp. B (Spectral) |
+|---|---|---|
+| Label source | External GFC | ΔNDVI threshold |
+| Resolution | 30 m → 10 m | 10 m native |
+| Temporal alignment | Annual loss year | Direct 2019–2022 |
+| Training N | 40,000 | 12,000 |
+| OA | 0.538 | 1.000 |
+| Kappa κ | 0.077 | 1.000 |
+| OOB score | 0.537 | 1.000 |
+| Label independence | ✅ Yes | ⚠️ Circular risk |
+| Best use case | Independent validation | Exploratory mapping |
+
+---
+
+### Full-Scene Prediction Map
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig10_PredictionMap.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 10 — Full-Scene Deforestation Prediction Map, Rondônia 2019–2022.</b><br>
+  Green = stable forest · Red = deforested (2019–22) · Grey = no data (cloud/shadow masked).<br>
+  Left: full tile overview (Forest: 10,069 km² · Deforested: 1,391 km²). Right: central 6×6 km crop clearly resolving the fishbone deforestation pattern along the BR-364 road network.
+</p>
+
+The Experiment B model is applied to the full ~10,980 × 10,980 pixel Sentinel-2 tile in 2,048-pixel windows to stay within Colab's RAM limit. The prediction map identifies **1,391 km²** of forest loss across the tile between 2019 and 2022, against 10,069 km² of stable forest. The central crop (Figure 10, right) clearly resolves the fishbone deforestation pattern — clearing strips extending perpendicularly from road spines — that is the defining spatial signature of colonisation-era land clearance in Rondônia (Roberts et al., 2002). Applying a tropical forest carbon density of 150 tC/ha and a CO₂ conversion factor of 3.67, the mapped loss area represents approximately **≈20.87 Mt CO₂ at risk** — equivalent to the annual emissions of several million cars, stored in forest that no longer exists.
+
+---
+
 
 
 
