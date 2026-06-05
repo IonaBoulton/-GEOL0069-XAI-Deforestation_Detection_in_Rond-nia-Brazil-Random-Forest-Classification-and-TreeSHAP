@@ -850,7 +850,102 @@ The waterfall plot provides a **single-pixel explanation** for the most confiden
 This pixel shows strongly negative ΔNDVI (−0.139) and ΔNBR (−0.114) — a large drop in both vegetation cover and burn ratio between 2019 and 2022, consistent with fire-preceded mechanical clearing. ΔNDVI contributes +0.26 and ΔNBR contributes +0.15 to the prediction, together accounting for 82% of the total shift from baseline (0.5) to the final prediction (1.0). All remaining features contribute only +0.01 each, reinforcing the hierarchy seen globally in Figure 11. The waterfall demonstrates that the model's confidence in this pixel is almost entirely driven by the temporal change signal — exactly the physical reasoning we would expect from a well-calibrated deforestation detector.
 
 ---
+## 10. Environmental Assessment
 
+### Why Assess the Environmental Cost of Research?
+
+Machine learning is not carbon-neutral. Training models, downloading satellite data, and running 
+large-scale predictions all consume energy — and that energy has a carbon cost. For a project 
+explicitly concerned with environmental degradation, failing to account for its own footprint 
+would be a significant omission. This section reports the full lifecycle carbon cost of the 
+pipeline and contextualises it against the scale of the environmental problem it is monitoring.
+
+### Why CodeCarbon?
+
+**CodeCarbon** (Courty et al., 2022) is an open-source Python library that measures CPU and RAM 
+energy consumption in real time and converts it to CO₂ equivalent emissions using the carbon 
+intensity of the local electricity grid. It was selected for three reasons:
+
+- **Measured, not estimated:** CodeCarbon instruments the actual hardware rather than applying 
+  generic per-hour cloud compute estimates, producing a more honest and reproducible footprint.
+- **Integrated tracking:** Initialised silently at the start of Section 0, it runs continuously 
+  across the full notebook runtime — capturing both training runs, the full-scene tiled prediction, 
+  and the TreeSHAP computation — without requiring manual logging.
+- **Scope 1 specificity:** Unlike broad lifecycle tools, CodeCarbon isolates the direct compute 
+  footprint precisely, allowing the remaining scopes (data transfer, storage) to be calculated 
+  separately using standard LCA factors and combined into a total.
+
+Emissions are assessed across four scopes, following standard lifecycle analysis practice:
+
+| Scope | What it measures | Method |
+|---|---|---|
+| **Scope 1 — Compute** | CPU/RAM energy across the full notebook runtime | CodeCarbon (measured directly) |
+| **Scope 2 — Data transfer** | Two Sentinel-2 SAFE archives (~2.5 GB each) downloaded + Drive upload | 0.06 kWh/GB × 5 GB |
+| **Scope 3/4 — Storage & device** | Google Drive storage and end-user laptop energy | Standard LCA factors |
+
+This four-scope approach captures the full research lifecycle rather than compute alone — 
+a more complete and honest accounting than reporting only training emissions.
+
+---
+
+### Results
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig15_EnvironmentalAssessment.png" width="90%"/>
+</p>
+
+<p align="center">
+  <b>Figure 15 — Environmental Assessment: Project Carbon Footprint.</b><br>
+  Left: emission scope breakdown — Scope 1 (compute) accounts for 69.3% of total emissions, 
+  Scope 2 (data transfer) 30.7%, and Scope 3/4 (storage) a negligible 0.0%.
+  Centre: energy consumption across four CodeCarbon runs.
+  Right: log-scale comparison of research cost (227.88 gCO₂eq) versus forest carbon at risk 
+  (20,866 tCO₂) — a difference of eight orders of magnitude.
+</p>
+
+| Scope | Emissions |
+|---|---|
+| Scope 1 — Compute | 157.903 gCO₂eq |
+| Scope 2 — Data transfer | 69.90 gCO₂eq |
+| Scope 3/4 — Storage | 0.076 gCO₂eq |
+| **Total** | **227.88 gCO₂eq** |
+| Runtime | 0.51 hours |
+| Forest carbon at risk | ~20,866 t CO₂ |
+| **Research:forest ratio** | **1 g CO₂ per 91,567 kg CO₂ monitored** |
+
+The total project footprint of **227.88 gCO₂eq** — roughly equivalent to boiling a kettle 
+a handful of times — is negligible relative to the scale of the problem being monitored. 
+The pipeline identified **20,866 tonnes of CO₂** locked in the 1,391 km² of forest flagged 
+as lost between 2019 and 2022, giving a research-to-forest carbon ratio of approximately 
+**1:91,567,000** — for every gram of CO₂ the research emitted, it located over 91,000 kg of 
+forest carbon at risk.
+
+Compute (Scope 1) dominates at 69.3% of total emissions, driven primarily by the Random Forest 
+training runs and the tiled full-scene prediction pass. Data transfer (Scope 2) contributes 30.7%, 
+reflecting the two large Sentinel-2 SAFE archives downloaded from the Copernicus Data Space. 
+Storage and device emissions are negligible at effectively 0%.
+
+The use of **Google Colab's CPU-only runtime** — rather than a dedicated GPU cluster — keeps 
+the compute footprint low, though at the cost of runtime (full-scene tiled prediction takes 
+several minutes on CPU). It is important to note that CodeCarbon captures only direct CPU/RAM 
+energy; the embodied carbon of the hardware, Google's data centre infrastructure, and cooling 
+systems are not included. The reported footprint is therefore a **lower bound** on the true 
+lifecycle cost. A full assessment would require data centre-level energy accounting beyond what 
+is available to a notebook-level tool.
+
+---
+
+### The 'So What' Chain — Five-Level Research Summary
+
+| Level | Question | Finding |
+|---|---|---|
+| **1 — What happened?** | How much forest was lost? | 1,391.1 km² deforested 2019–2022 (≈ 194,829 football pitches) |
+| **2 — How confident?** | Can we trust this estimate? | Exp. B: OA=1.000, κ=1.000, OOB=1.000. Exp. A (independent benchmark): OA=0.538, κ=0.077 — lower accuracy reflects 30 m label resolution mismatch |
+| **3 — Why did the model predict?** | What drove the classification? | SHAP: ΔNDVI dominates (mean \|SHAP\| = 0.2494); two pathways identified — fire-preceded clearing (↑ΔNBR) and direct mechanical clearing (cool ΔNBR) |
+| **4 — What are the limits?** | Where does the model fail? | Exp. B: circularity risk (labels derived from ΔNDVI feature). Exp. A: 30 m → 10 m misalignment and Hansen label lag. Dry-season moisture stress can mimic deforestation signal |
+| **5 — Does cost justify benefit?** | Was the compute worthwhile? | Project emitted 227.9 gCO₂eq to locate 20,866 t CO₂ at risk → ratio 1:91,567,000 |
+
+---
 
 
 
