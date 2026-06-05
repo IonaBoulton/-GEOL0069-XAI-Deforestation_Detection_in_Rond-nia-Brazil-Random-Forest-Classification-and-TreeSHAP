@@ -729,6 +729,12 @@ The Experiment B model is applied to the full ~10,980 × 10,980 pixel Sentinel-2
 
 Achieving high classification accuracy is necessary but not sufficient for operational environmental monitoring. A model that correctly flags a pixel as deforested but cannot explain *why* it did so offers little to the scientists, policymakers, and conservationists who need to act on its outputs. This is the core motivation for **Explainable AI (XAI)** — a family of methods that open the black box and attribute predictions back to individual input features.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_XAI_TreeSHAP.png" width="85%"/>
+</p>
+
+<p align="center">
+
 This project uses **TreeSHAP** (Lundberg et al., 2020), the state-of-the-art explainability method for tree-based models. SHAP values are grounded in **cooperative game theory** (Shapley, 1953): each feature's contribution to a prediction is its fair share of the total model output, computed by averaging over all possible orderings of features. This satisfies three important axioms:
 
 | Axiom | Meaning |
