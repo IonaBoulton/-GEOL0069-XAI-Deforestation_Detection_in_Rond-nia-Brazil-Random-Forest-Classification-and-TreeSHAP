@@ -947,5 +947,164 @@ is available to a notebook-level tool.
 
 ---
 
+## 11. Discussion, Limitations & Future Work
+
+### Discussion
+
+#### What the results tell us:
+
+The central finding of this project is not simply that 1,391 km² of forest was lost in 
+Rondônia between 2019 and 2022 — it is that a lightweight, interpretable machine learning 
+pipeline running on a single CPU in under an hour can locate over 20,000 tonnes of carbon 
+at risk, explain every prediction it makes, and honestly account for the methodological 
+trade-offs involved in doing so.
+
+The four components of the pipeline — Experiment A, Experiment B, the full-scene prediction 
+map, and TreeSHAP — are not independent results. They are complementary, and their value 
+comes from reading them together.
+
+#### How the experiments complement each other:
+
+Experiment A and Experiment B are often tempting to interpret as a failure and a success 
+respectively. This misses the point. Experiment A's near-chance accuracy (OA = 0.538, 
+κ = 0.077) is not a model failure — it is a precise quantification of what happens when 
+training labels are spatially misaligned with the imagery they supervise. The 30 m → 10 m 
+resolution mismatch between Hansen GFC and Sentinel-2 causes genuine deforestation signal 
+to be mislabelled as stable forest, and the model cannot overcome this regardless of 
+classifier quality. This is a finding that is widely acknowledged in the remote sensing 
+literature but rarely demonstrated so clearly in a single project.
+
+Experiment B recovers perfect accuracy (OA = 1.000, κ = 1.000) by eliminating the 
+resolution mismatch — but at the cost of label independence. Because the ΔNDVI threshold 
+labels are derived from the same data the model is trained on, the high accuracy partially 
+reflects the model learning to approximate the threshold function rather than a fully 
+generalised representation of deforestation. Experiment B is not a better experiment than 
+Experiment A — it is a different trade-off, and its results must be interpreted in that 
+context.
+
+Together, the two experiments bracket the problem honestly: Experiment A shows the cost 
+of principled, independent labelling under resolution mismatch; Experiment B shows the 
+benefit of spatial alignment at the cost of circularity. Neither alone is sufficient — 
+both together produce a methodological discussion that is more rigorous than either 
+experiment could support independently.
+
+#### How the prediction map and TreeSHAP complement the experiments:
+
+The full-scene prediction map (Figure 10) applies the Experiment B model to the complete 
+~10,980 × 10,980 pixel Sentinel-2 tile and produces a spatially explicit deforestation 
+map resolving the fishbone clearance patterns along the BR-364 corridor at 10 m resolution. 
+This is the operational output — the thing a conservation organisation or government agency 
+could actually use. But without the TreeSHAP analysis, it would be a black-box map: 
+accurate (within the limits of Experiment B), but uninterpretable and unverifiable.
+
+TreeSHAP closes this gap. By confirming that ΔNDVI dominates predictions at mean 
+|SHAP| = 0.2494 — nearly double the next feature — it validates that the model is 
+responding to the temporal vegetation loss signal rather than to spurious spectral 
+correlations. The SHAP dependence plot goes further, revealing that the model captures 
+two physically distinct deforestation pathways (fire-preceded and direct mechanical 
+clearing) without ever being explicitly trained to distinguish them. This is a level of 
+interpretability that standard accuracy metrics cannot provide, and it substantially 
+increases confidence in the full-scene map as a physically meaningful product rather than 
+a statistical artefact.
+
+The environmental assessment adds a final layer: the pipeline emitted 227.88 gCO₂eq to 
+produce this analysis — a research-to-forest carbon ratio of 1:91,567,000. For a project 
+about forest carbon loss, this accountability is not merely procedural; it is part of the 
+scientific argument.
+
+---
+
+### Limitations
+
+**Hansen GFC resolution mismatch.** The 30 m resolution of the Hansen Global Forest 
+Change dataset is the primary constraint on Experiment A. When resampled to the 10 m 
+Sentinel-2 grid via nearest-neighbour interpolation, each Hansen pixel maps to nine 
+Sentinel-2 pixels, creating blocky label boundaries that do not align with spectral edges 
+in the imagery. Fine-scale clearance events — narrow road incursions, small agricultural 
+plots, edge degradation — that are clearly visible at 10 m are routinely mislabelled as 
+stable forest. This is not a fixable problem within the current framework; it requires 
+either higher-resolution external labels or a fundamentally different approach to 
+cross-sensor label transfer.
+
+**Circularity in Experiment B.** Deriving training labels from ΔNDVI thresholding and 
+then using ΔNDVI as a training feature creates a circular dependency. The model's perfect 
+accuracy on the held-out test set partially reflects learning to approximate the threshold 
+function, not necessarily a generalised representation of deforestation. Performance on 
+out-of-domain imagery — a different sensor, region, or year — would likely be 
+substantially lower. This limitation is inherent to self-supervised labelling and is 
+reported transparently rather than concealed.
+
+**CodeCarbon runtime scope.** CodeCarbon captures CPU and RAM energy consumption at the 
+notebook level — it does not account for the embodied carbon of the hardware, Google's 
+data centre infrastructure, networking equipment, or cooling systems. The reported 
+footprint of 227.88 gCO₂eq is therefore a lower bound on the true lifecycle cost. 
+Additionally, the 0.51-hour runtime reflects a single full pipeline execution; 
+development iterations, failed runs, and exploratory analysis conducted prior to the 
+final notebook run are not captured. The true research footprint is higher than reported.
+
+**Using the imagery itself to generate training labels.** Both the circularity limitation 
+in Experiment B and the resolution mismatch in Experiment A are manifestations of a 
+deeper problem: there is no truly independent, high-resolution ground truth available 
+for this tile at this time period. The pipeline is therefore training and evaluating on 
+data that is never fully independent from the features it uses. A rigorous evaluation 
+would require field-verified deforestation polygons or very high resolution commercial 
+imagery as an independent reference — neither of which was available within the scope 
+of this project.
+
+**Single-date change detection.** Comparing two dry-season snapshots three years apart 
+cannot detect forest that was cleared and partially regrew within the window, nor 
+distinguish abrupt clearing from gradual degradation. Any seasonal browning in 2022 
+not present in 2019 risks generating false positives. A time-series approach using 
+annual composites would substantially reduce both omission and commission errors.
+
+---
+
+### Future Work
+
+#### General direction:
+
+The most impactful next step for this pipeline would be replacing the self-supervised 
+ΔNDVI labels with a higher-resolution, independent reference product. The Brazil PRODES 
+annual deforestation polygon dataset — produced by INPE at resolutions compatible with 
+Sentinel-2 — would eliminate the resolution mismatch of Experiment A while retaining 
+label independence, resolving both of the core labelling limitations simultaneously. 
+Extending the pipeline to a time-series framework using annual dry-season Sentinel-2 
+composites across the full 2019–2022 window would replace the binary change detection 
+approach with a continuous monitoring system capable of detecting gradual degradation, 
+seasonal recovery, and secondary regrowth.
+
+More broadly, the dual-experiment design could be formalised as a reusable benchmarking 
+framework for evaluating label quality in any supervised deforestation mapping context — 
+not just Rondônia. The gap between Experiment A and Experiment B accuracy provides a 
+quantitative measure of label-induced performance loss that could guide sensor and 
+resolution choices for future monitoring systems.
+
+#### Specific project suggestions:
+
+**Cross-state generalisation.** Train the Experiment B model on the BR-364 corridor 
+tile and test on a spatially disjoint Sentinel-2 tile in Pará or Mato Grosso — states 
+with different deforestation drivers and land cover contexts. A significant accuracy 
+drop would confirm the circularity concern; robustness would suggest the model has 
+learned transferable physical representations.
+
+**Fire pathway mapping.** The SHAP dependence plot identifies fire-preceded clearing 
+as a distinct subgroup within the deforested class. Cross-referencing these pixels 
+spatially against INPE's BDQueimadas active fire database would test whether the 
+ΔNBR-warm cluster corresponds to documented burn locations — providing independent 
+validation of the SHAP interaction finding.
+
+**Near-real-time monitoring.** Sentinel-2's 5-day revisit frequency opens the 
+possibility of a near-real-time alert system: flag any pixel where ΔNDVI drops below 
+the deforestation threshold in any new acquisition relative to a stable baseline 
+composite. This would convert the pipeline from a retrospective change detection tool 
+into an operational early-warning system compatible with existing platforms such as 
+Global Forest Watch.
+
+**Higher-resolution labels.** Replacing Hansen GFC with Planet NICFI monthly mosaics 
+at 4.77 m resolution — freely available for tropical forest monitoring — would 
+eliminate the resolution mismatch entirely and allow Experiment A to be re-run with 
+truly independent, spatially aligned labels for a direct comparison against Experiment B.
+
+---
 
 
