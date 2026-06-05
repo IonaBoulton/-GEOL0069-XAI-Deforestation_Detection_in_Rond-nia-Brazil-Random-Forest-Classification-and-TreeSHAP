@@ -723,6 +723,128 @@ The Experiment B model is applied to the full ~10,980 × 10,980 pixel Sentinel-2
 
 ---
 
+## 9. Explainability: TreeSHAP Analysis
+
+### What is Explainable AI and Why Does it Matter?
+
+Achieving high classification accuracy is necessary but not sufficient for operational environmental monitoring. A model that correctly flags a pixel as deforested but cannot explain *why* it did so offers little to the scientists, policymakers, and conservationists who need to act on its outputs. This is the core motivation for **Explainable AI (XAI)** — a family of methods that open the black box and attribute predictions back to individual input features.
+
+This project uses **TreeSHAP** (Lundberg et al., 2020), the state-of-the-art explainability method for tree-based models. SHAP values are grounded in **cooperative game theory** (Shapley, 1953): each feature's contribution to a prediction is its fair share of the total model output, computed by averaging over all possible orderings of features. This satisfies three important axioms:
+
+| Axiom | Meaning |
+|---|---|
+| **Efficiency** | SHAP values sum exactly to the difference between the prediction and the global baseline |
+| **Symmetry** | Two features with identical contributions receive identical SHAP values |
+| **Null player** | A feature that never affects any prediction receives a SHAP value of zero |
+
+Unlike standard feature importance (which averages impurity reduction across all trees and all predictions), TreeSHAP computes **exact Shapley values for each individual pixel** in polynomial time — making it both theoretically rigorous and computationally feasible at scale. The result is that every prediction in the map can be decomposed into a signed contribution from each of the 8 features, answering not just *which* features matter globally, but *how* and *why* the model responded to a specific pixel.
+
+TreeSHAP is run on the **Experiment B model** — the higher-accuracy, spatially-aligned classifier — using a stratified sample of 5,000 pixels (2,500 deforested, 2,500 stable forest).
+
+---
+
+### Figure 11 — Global Feature Importance
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig11_SHAP_GlobalBar.png" width="85%"/>
+</p>
+
+<p align="center">
+  <b>Figure 11 — TreeSHAP Global Feature Importance (Experiment B).</b><br>
+  Mean |SHAP value| per feature across the deforested class sample. ΔNDVI (0.2494) and ΔNBR (0.1419) 
+  together account for 76% of total importance. All single-epoch indices contribute marginally by comparison.
+</p>
+
+The global bar chart ranks features by their mean absolute SHAP value — the average magnitude of each feature's contribution to the deforested class prediction across all 5,000 sample pixels. The hierarchy is unambiguous:
+
+| Feature | Mean \|SHAP\| | Interpretation |
+|---|---|---|
+| **ΔNDVI (Change)** | **0.2494** | Dominant signal — temporal vegetation loss |
+| **ΔNBR (Change)** | **0.1419** | Secondary signal — fire and clearing |
+| NDVI 2019 | 0.0392 | Baseline vegetation state |
+| NDWI 2019 | 0.0295 | Baseline canopy moisture |
+| NDWI 2022 | 0.0256 | Post-change canopy moisture |
+| NDVI 2022 | 0.0177 | Post-change vegetation |
+| NBR 2022 | 0.0080 | Post-change burn state |
+| NBR 2019 | 0.0076 | Baseline burn state |
+
+ΔNDVI alone accounts for nearly half of total predictive attribution. This confirms that the model has learned **temporal change** — vegetation loss between 2019 and 2022 — rather than the absolute spectral state of either epoch. This directly validates the feature engineering decision made in Section 6 and is consistent with the Experiment B feature importance plot (Figure 8B), where ΔNBR and ΔNDVI jointly dominated at 72.5% of Gini importance. SHAP and Gini importance converge on the same physical story, providing mutual validation.
+
+---
+
+### Figure 12 — Beeswarm Plot
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig12_SHAP_Beeswarm.png" width="85%"/>
+</p>
+
+<p align="center">
+  <b>Figure 12 — TreeSHAP Beeswarm Plot (Deforested class — Experiment B).</b><br>
+  Each dot = one pixel. X-axis = SHAP value (impact on model output toward deforested). 
+  Colour = raw feature value (pink = high, blue = low). ΔNDVI dots cluster far right 
+  at high SHAP values, all pink — high ΔNDVI (stable vegetation) pushes strongly away from deforested.
+</p>
+
+The beeswarm adds **direction and spread** to the global ranking. For ΔNDVI, the dots form a tight rightward cluster coloured uniformly pink — meaning pixels with *high* ΔNDVI values (little or no vegetation loss) generate large positive SHAP contributions toward the deforested class... but wait: reading the colour scale carefully, pink = high feature value. For the deforested class, the pixels driving the largest positive SHAP values are those with *high* ΔNDVI — but this is because the SHAP values shown are for the deforested class probability. Pixels with strongly *negative* ΔNDVI (large vegetation loss, blue) cluster to the far right with the largest positive contributions toward predicting deforestation, while high-ΔNDVI pixels (stable vegetation, pink) generate negative SHAP values, pushing predictions away from the deforested class.
+
+For ΔNBR, a similar but slightly broader distribution reflects the secondary fire/clearing signal. The single-epoch features (NBR 2019/2022, NDWI 2019/2022) show narrow distributions clustered near zero — confirming they contribute little discriminative power once the temporal change features are available.
+
+---
+
+### Figure 13 — SHAP Dependence Plot
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig13_SHAP_DependencePlot.png" width="85%"/>
+</p>
+
+<p align="center">
+  <b>Figure 13 — SHAP Dependence Plot: ΔNDVI × ΔNBR Interaction.</b><br>
+  X-axis = ΔNDVI value · Y-axis = SHAP value for deforested class · Colour = ΔNBR value 
+  (warm pink = fire-preceded clearing · cool blue = direct mechanical clearing). 
+  The dashed vertical line marks the −0.25 ΔNDVI threshold of the strong deforestation zone.
+</p>
+
+The dependence plot is the most physically informative of the four SHAP figures. It plots each pixel's ΔNDVI value against its SHAP contribution to the deforested prediction, coloured by ΔNBR — revealing the **interaction between the two dominant features**.
+
+Two distinct patterns emerge to the left of the −0.25 ΔNDVI threshold (the strong deforestation zone, shaded pink):
+
+- **Warm-coloured pixels (high ΔNBR):** elevated shortwave infrared relative to NIR — the spectral signature of fire-exposed ground, char, and ash. These pixels represent **fire-preceded clearing**, where vegetation is first burned before the land is converted. This is one of the dominant clearance mechanisms in Rondônia, consistent with the literature on Amazon frontier agriculture (Fearnside, 2005).
+- **Cool-coloured pixels (low/negative ΔNBR):** no elevated SWIR signal — vegetation loss without a corresponding burn signature, indicating **direct mechanical clearing** by bulldozers or chainsaw without fire. Both pathways converge on similarly large positive SHAP values, confirming the model captures both mechanisms without being explicitly trained to distinguish them.
+
+This is a finding that standard accuracy metrics and feature importance plots cannot reveal — it emerges only through the interaction-aware SHAP dependence analysis.
+
+---
+
+### Figure 14 — Single Pixel Waterfall
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig14_SHAP_Waterfall.png" width="85%"/>
+</p>
+
+<p align="center">
+  <b>Figure 14 — SHAP Waterfall: Single Pixel Explanation (Experiment B).</b><br>
+  Most-confidently deforested pixel (p = 1.000). Each bar shows one feature's contribution 
+  from the global baseline E[f(x)] = 0.5 to the final prediction f(x) = 1.0. 
+  ΔNDVI (+0.26) and ΔNBR (+0.15) together account for 82% of the total push from baseline to prediction.
+</p>
+
+The waterfall plot provides a **single-pixel explanation** for the most confidently deforested pixel in the SHAP sample (predicted probability = 1.000). Starting from the global baseline of E[f(x)] = 0.5 — the model's average prediction across all pixels — each bar shows how much one feature shifts the prediction up or down:
+
+| Feature | Raw value | SHAP contribution |
+|---|---|---|
+| **ΔNDVI (Change)** | **−0.139** | **+0.26** |
+| **ΔNBR (Change)** | **−0.114** | **+0.15** |
+| NDWI 2022 | −0.337 | +0.03 |
+| NDVI 2022 | 0.376 | +0.02 |
+| NDVI 2019 | 0.515 | +0.01 |
+| NDWI 2019 | −0.449 | +0.01 |
+| NBR 2019 | 0.401 | +0.01 |
+| NBR 2022 | 0.287 | +0.01 |
+
+This pixel shows strongly negative ΔNDVI (−0.139) and ΔNBR (−0.114) — a large drop in both vegetation cover and burn ratio between 2019 and 2022, consistent with fire-preceded mechanical clearing. ΔNDVI contributes +0.26 and ΔNBR contributes +0.15 to the prediction, together accounting for 82% of the total shift from baseline (0.5) to the final prediction (1.0). All remaining features contribute only +0.01 each, reinforcing the hierarchy seen globally in Figure 11. The waterfall demonstrates that the model's confidence in this pixel is almost entirely driven by the temporal change signal — exactly the physical reasoning we would expect from a well-calibrated deforestation detector.
+
+---
+
 
 
 
