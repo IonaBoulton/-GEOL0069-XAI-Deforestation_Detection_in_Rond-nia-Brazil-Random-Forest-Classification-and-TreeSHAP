@@ -1107,4 +1107,120 @@ truly independent, spatially aligned labels for a direct comparison against Expe
 
 ---
 
+## 12. Video Walkthrough
+
+🎬 A video walkthrough of this project is available here:
+
+> **[Link to be added]**
+> 
+---
+
+## 13. Acknowledgements
+
+This project was completed as part of the **GEOL0069 — AI for Earth Observation** module 
+at University College London, 2025/26.
+
+I would like to thank **[Dr Michel Tsamados]** 
+for designing and delivering the GEOL0069 module and for his guidance and support throughout 
+the course. I would also like to thank PhD supervisors **Weibin Chen** and **Shambhu** for 
+their support and feedback during the project.
+
+This project was also inspired by **Michael Telespher's** example project — *Monitoring 
+Palm Oil-Driven Deforestation in Borneo Through K-means Analysis of Satellite Data* — 
+produced as part of the GEOL0069 course. His work on satellite-based deforestation 
+detection in a tropical context provided a valuable reference point for the approach 
+taken here, though the methodology, study area, and analytical framework of this project 
+are entirely independent.
+
+**Figures and tools.** The Sentinel-2 satellite acquisition diagram and the general Random 
+Forest explainer figure were created using **Canva**. The Rondônia-specific Random Forest 
+dashboard figure and the XAI/TreeSHAP explainer figure were created with the assistance of 
+**Claude (Anthropic)**. AI tools (Claude, Anthropic) were used as an assistive tool 
+throughout the project for code structuring, documentation drafting, and README writing. 
+All scientific content, methodological decisions, and interpretations are the author's own.
+
+All Sentinel-2 data are provided free and open access by the **European Space Agency (ESA)** 
+under the Copernicus Open Access policy. The Hansen Global Forest Change dataset is made 
+freely available by the **University of Maryland** (Hansen et al., 2013). Carbon emissions 
+tracking is provided by the open-source **CodeCarbon** library (Courty et al., 2022).
+
+---
+
+## 14. References
+
+Breiman, L. (2001). Random Forests. *Machine Learning*, 45, 5–32.
+https://doi.org/10.1023/A:1010933404324
+
+Courty, V., Schmidt, V., Goyal-Kamal, Coutrier, M., Lottick, K., Goyal, S., et al. (2022).
+*CodeCarbon: Estimate and Track Carbon Emissions from Machine Learning Computing.*
+https://doi.org/10.48550/arXiv.2306.05323
+
+ESA (2021). *Sentinel-2 User Handbook.* European Space Agency.
+https://sentinel.esa.int/documents/247904/685211/Sentinel-2_User_Handbook
+
+Fearnside, P. M., & Salati, E. (1985). Explosive deforestation in Rondônia, Brazil.
+*Environmental Conservation*, 12(4), 355–356.
+
+Gatti, L. V., Basso, L. S., Miller, J. B., Gloor, M., Gatti Domingues, L., Cassol, H. L. G.,
+et al. (2021). Amazonia as a carbon source linked to deforestation and climate change.
+*Nature*, 595, 388–393. https://doi.org/10.1038/s41586-021-03629-6
+
+Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
+et al. (2013). High-resolution global maps of 21st-century forest cover change.
+*Science*, 342(6160), 850–853. https://doi.org/10.1126/science.1244693
+
+Lovejoy, T. E., & Nobre, C. (2018). Amazon tipping point.
+*Science Advances*, 4(2), eaat2340. https://doi.org/10.1126/sciadv.aat2340
+
+Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., et al. (2020).
+From local explanations to global understanding with explainable AI for trees.
+*Nature Machine Intelligence*, 2, 56–67. https://doi.org/10.1038/s42256-019-0138-9
+
+MAAP (Monitoring of the Andean Amazon Project). (2022). *MAAP #164: Amazon Tipping Point —
+Where Are We?* https://www.maaproject.org/2022/amazon-tipping-point/
+
+Maxwell, A. E., Warner, T. A., & Fang, F. (2018). Implementation of machine-learning
+classification in remote sensing: An applied review.
+*International Journal of Remote Sensing*, 39(9), 2784–2817.
+https://doi.org/10.1080/01431161.2018.1433343
+
+NASA Earth Observatory. (2006). *Seeing Forests for the Trees and the Carbon: Mapping the
+World's Forests in Three Dimensions.* https://earthobservatory.nasa.gov
+
+Pedlowski, M. A., Dale, V. H., Matricardi, E. A. T., & da Silva Filho, E. P. (2005).
+Patterns and impacts of deforestation in Rondônia, Brazil.
+*Landscape and Urban Planning*, 38(3–4), 149–157.
+
+RAISG (Amazon Geo-Referenced Socio-Environmental Information Network). (2022).
+*Amazon under Pressure 2022.* https://www.amazoniasocioambiental.org/
+
+Roberts, D. A., Numata, I., Holmes, K., Batista, G., Krug, T., Monteiro, A., et al. (2002).
+Large area mapping of land-cover change in Rondônia using multitemporal spectral mixture
+analysis and decision tree classifiers.
+*Journal of Geophysical Research: Atmospheres*, 107(D20), LBA 41-1.
+
+Shapley, L. S. (1953). A value for n-person games. In H. W. Kuhn & A. W. Tucker (Eds.),
+*Contributions to the Theory of Games* (Vol. 2, pp. 307–317). Princeton University Press.
+
+Skole, D., & Tucker, C. (1993). Tropical deforestation and habitat fragmentation in the
+Amazon: Satellite data from 1978 to 1988. *Science*, 260(5116), 1905–1910.
+
+Stone, T. A., Schlesinger, P., Houghton, R. A., & Woodwell, G. M. (1991). A map of the
+vegetation of South America based on satellite imagery.
+*Photogrammetric Engineering and Remote Sensing*, 57(4), 395–400.
+
+Tyukavina, A., Hansen, M. C., Potapov, P., Parker, D., Okpa, C., Turubanova, S., et al.
+(2017). Congo Basin forest loss dominated by increasing smallholder clearing.
+*Science Advances*, 3(11), e1602477.
+
+---
+
+## 15. Contact
+
+**Iona Boulton**
+BSc Earth Sciences — University College London
+
+📧 [iona.boulton.23@ucl.ac.uk](mailto:iona.boulton.23@ucl.ac.uk)
+🐙 [@IonaBoulton](https://github.com/IonaBoulton)
+
 
