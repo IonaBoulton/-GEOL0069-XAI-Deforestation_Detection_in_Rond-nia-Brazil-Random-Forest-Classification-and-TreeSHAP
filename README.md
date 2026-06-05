@@ -572,3 +572,22 @@ is predominantly forest. Kappa corrects for this — Experiment A's κ = 0.077 (
 zero) confirms the model is performing at chance level, not just predicting the 
 majority class.
 
+## 7. Experimental Design: Experiment A vs B
+
+The dual-experiment structure is the central methodological contribution of this project. Both experiments use the same Random Forest architecture (200 trees, `max_features='sqrt'`, `class_weight='balanced'`, `oob_score=True`, `random_state=42`) and the same 8-feature input vector — the only thing that changes is the source of training labels.
+
+### Experiment A — Hansen GFC Labels
+
+Labels are drawn from the Hansen Global Forest Change product (Hansen et al., 2013), downloaded via Google Earth Engine and co-registered to the Sentinel-2 tile extent. Pixels with a Hansen loss-year value of 19–22 (2019–2022) are assigned Class 1 (deforested); pixels with loss-year = 0 are assigned Class 0 (stable forest). A balanced sample of training pixels is drawn from each class, stratified and split 80/20 into training and test sets before fitting the classifier. This is the methodologically principled approach — the labels are entirely independent of the Sentinel-2 imagery — but introduces a known 30 m → 10 m spatial resolution mismatch when the Hansen raster is resampled onto the Sentinel-2 grid.
+
+### Experiment B — Spectral Threshold Labels
+
+Labels are derived directly from the ΔNDVI feature layer at native 10 m resolution using a statistically-derived threshold. Pixels where ΔNDVI falls below (mean − 1.0 × std) are labelled Class 1 (deforested); pixels above (mean + 0.2 × std) are labelled Class 0 (stable forest). Pixels in the intermediate range are excluded from training to avoid ambiguous samples near the decision boundary. The same balanced sampling, train/test split, and classifier configuration as Experiment A are then applied. This achieves perfect spatial alignment with the feature raster but introduces a degree of circularity — the labels are derived from the same data the model learns to classify.
+
+The full-scene prediction map and TreeSHAP analysis (Sections 8 and 9) use the Experiment B model, with this choice explicitly justified by its superior spatial consistency. The comparison between experiments is quantified in the Results section below.
+
+---
+
+
+
+
