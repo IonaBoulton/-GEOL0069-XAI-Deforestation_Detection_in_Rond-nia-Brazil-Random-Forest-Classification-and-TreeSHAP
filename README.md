@@ -864,7 +864,7 @@ The global bar chart ranks features by their mean absolute SHAP value, the avera
 of each feature's contribution to the deforested class prediction across all 5,000 sample pixels.
 The hierarchy is unambiguous:
 
-| Feature | Mean |SHAP| | Interpretation |
+| Feature | Mean SHAP | Interpretation |
 |---|---|---|
 | **ΔNDVI (Change)** | **0.2494** | Dominant signal, temporal vegetation loss |
 | **ΔNBR (Change)** | **0.1419** | Secondary signal, fire and clearing |
