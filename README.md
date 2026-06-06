@@ -1,4 +1,4 @@
-# GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP
+# GEOL0069 XAI Deforestation Detection in Rondnia Brazil Random Forest Classification and TreeSHAP
 Explainable Forest Loss Detection in Rondônia, Brazil: A Dual-Label Experiment Comparing Hansen GFC and Spectral Threshold Training Strategies for Sentinel-2 Random Forest Classification with TreeSHAP Analysis (2019–2022)
 
 <p align="center">
@@ -56,29 +56,29 @@ Explainable Forest Loss Detection in Rondônia, Brazil: A Dual-Label Experiment 
 
 ## 1. Introduction
 
-This repository contains the final independent project for the **GEOL0069 — AI for Earth 
+This repository contains the final independent project for the **GEOL0069 AI for Earth
 Observations** module at University College London.
 
-The project maps and explains rapid tropical deforestation in **Rondônia, Brazil** — one of 
-the most actively deforested regions on Earth — over a four-year window from **2019 to 2022**, 
+The project maps and explains rapid tropical deforestation in **Rondônia, Brazil**, one of
+the most actively deforested regions on Earth, over a four-year window from **2019 to 2022**,
 using a pair of dry-season **Sentinel-2 Level-2A** acquisitions.
 
-At its core, the pipeline trains a **Random Forest classifier** on engineered spectral change 
-features (NDVI, NBR, NDWI and their temporal deltas) and explains every prediction using 
-**TreeSHAP** — game-theoretic feature attribution that reveals *why* the model flags a pixel 
-as deforested, not just *that* it does.
+At its core, the pipeline trains a **Random Forest classifier** on engineered spectral change
+features (NDVI, NBR, NDWI and their temporal deltas) and explains every prediction using
+**TreeSHAP**, a game-theoretic feature attribution method that reveals *why* the model flags
+a pixel as deforested, not just *that* it does.
 
 A central methodological contribution is a **dual-label experiment**:
 
-- **Experiment A** trains on external labels from the **Hansen Global Forest Change** dataset 
-  (UMD, 30 m) — an independent, peer-reviewed ground truth that introduces a known 
+- **Experiment A** trains on external labels from the **Hansen Global Forest Change** dataset
+  (UMD, 30 m), an independent, peer-reviewed ground truth that introduces a known
   resolution mismatch with Sentinel-2's 10 m grid.
-- **Experiment B** trains on **spectral threshold labels** derived directly from ΔNDVI — 
+- **Experiment B** trains on **spectral threshold labels** derived directly from ΔNDVI,
   achieving native 10 m spatial alignment at the cost of label independence.
 
-Comparing the two experiments quantifies the real-world accuracy cost of cross-sensor label 
-misalignment and produces an honest methodological discussion rarely seen in student projects. 
-The pipeline also tracks its own carbon footprint via **CodeCarbon**, comparing research 
+Comparing the two experiments quantifies the real-world accuracy cost of cross-sensor label
+misalignment and produces an honest methodological discussion rarely seen in student projects.
+The pipeline also tracks its own carbon footprint via **CodeCarbon**, comparing research
 emissions against the carbon stored in the forests being monitored.
 
 ---
@@ -86,68 +86,68 @@ emissions against the carbon stored in the forests being monitored.
 ## 2. Background & Context
 
 <p align="center">
-  <img src="Figures/map-Rondonia-Brazil.jpg.webp" 
-       alt="Map of South America with Rondônia highlighted" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/map-Rondonia-Brazil.jpg.webp"
+       alt="Map of South America with Rondônia highlighted"
        width="54%"/>
   &nbsp;&nbsp;
-  <img src="Figures/unnamed.gif" 
-       alt="Detailed map of Rondônia state showing cities, rivers and borders" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/unnamed.gif"
+       alt="Detailed map of Rondônia state showing cities, rivers and borders"
        width="38%"/>
 </p>
 
 <p align="center">
-  <b>Figure 1.</b> Location of Rondônia state within Brazil and South America (left), 
-  with state-level detail showing major cities, rivers and borders (right). 
-  Rondônia is situated in the south-western Brazilian Amazon, bordering Bolivia 
+  <b>Figure 1 -</b> Location of Rondônia state within Brazil and South America (left),
+  with state-level detail showing major cities, rivers and borders (right).
+  Rondônia is situated in the south-western Brazilian Amazon, bordering Bolivia
   to the south-west. Its capital, Porto Velho, lies along the Madeira River.<br>
   <sub>
-    Sources: 
-    <a href="https://www.britannica.com/place/Rondonia">Encyclopædia Britannica (2024)</a> · 
+    Sources:
+    <a href="https://www.britannica.com/place/Rondonia">Encyclopædia Britannica (2024)</a> ·
     <a href="http://www.v-brazil.com/tourism/rondonia/map-rondonia.html">V-Brazil Tourism (2024)</a>
   </sub>
 </p>
 
 ---
 
-### 2.1 · Study Area: Rondônia, Brazil
+### 2.1 Study Area: Rondônia, Brazil
 
 Rondônia is a state in the **south-western Brazilian Amazon**, bordering Bolivia to the
 south-west and covering approximately 237,576 km². Its capital is **Porto Velho**, situated
-along the Madeira River — a major tributary of the Amazon. Though largely tropical rainforest,
+along the Madeira River, a major tributary of the Amazon. Though largely tropical rainforest,
 Rondônia today represents one of the most heavily altered landscapes in the entire Amazon basin.
 
-### 2.2 · The Arc of Deforestation
+### 2.2 The Arc of Deforestation
 
-Rondônia sits at the heart of what scientists call the **"Arc of Deforestation"** — a
+Rondônia sits at the heart of what scientists call the **"Arc of Deforestation"**, a
 crescent-shaped belt of active forest clearance that follows the southern and eastern margins
 of the Amazon basin from the state of Mato Grosso in the east through Rondônia and into
-Pará in the north (NASA Earth Observatory, 2006). This arc marks the active agricultural
+Pará in the north (NASA Earth Observatory, 2025). This arc marks the active agricultural
 frontier where forest is converted to cattle pasture and cropland at a faster rate than
 anywhere else on Earth.
 
 ---
 
 <p align="center">
-  <img src="Figures/maaproject.org-maap-164-amazon-tipping-point-where-are-we-Map2-Total-Deforestation-AmzBiog-200dpi-Eng.jpg" 
-       alt="Map of total deforestation across the Amazon biome showing concentration in Rondônia" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/maaproject.org-maap-164-amazon-tipping-point-where-are-we-Map2-Total-Deforestation-AmzBiog-200dpi-Eng.jpg"
+       alt="Map of total deforestation across the Amazon biome showing concentration in Rondônia"
        width="75%"/>
 </p>
 
 <p align="center">
-  <b>Figure 2.</b> Cumulative deforestation across the Amazon biome, 
-  highlighting the intense concentration of forest loss in Rondônia and the 
-  broader southern arc of deforestation. Rondônia consistently ranks among 
+  <b>Figure 2 -</b> Cumulative deforestation across the Amazon biome,
+  highlighting the intense concentration of forest loss in Rondônia and the
+  broader southern arc of deforestation. Rondônia consistently ranks among
   the most heavily deforested Amazonian states.<br>
   <sub>
-    Source: 
-    <a href="https://www.maaproject.org/2022/amazon-tipping-point/">
-    MAAP (Monitoring of the Andean Amazon Project), 2022 — MAAP #164</a>
+    Source:
+    <a href="https://www.raisg.org/en/categoria_da_publicacao/pressures-and-threats/">
+    RAISG, 2022</a>
   </sub>
 </p>
 
 ---
 
-### 2.3 · History of Deforestation in Rondônia
+### 2.3 History of Deforestation in Rondônia
 
 Rondônia was almost entirely forested as recently as the 1960s. The transformation began
 with the construction and paving of the **BR-364 highway**, which connected the state to
@@ -155,33 +155,30 @@ Brazil's Atlantic coast and opened the interior to large-scale migration (Fearns
 1985). Government-sponsored colonisation programmes in the 1970s and 1980s encouraged
 settlers from Brazil's south and south-east to relocate to the region, offering cheap land
 parcels along a grid of secondary roads branching perpendicularly from the BR-364 at
-approximately 4 km intervals. From satellite imagery, this pattern of clearing — forest
-removed in strips extending outward from a central road spine — is immediately recognisable
-as the iconic **"fishbone" deforestation pattern** (Roberts et al., 2002; NASA SVS, 2013).
+approximately 4 km intervals. From satellite imagery, this pattern of clearing, forest
+removed in strips extending outward from a central road spine, is immediately recognisable
+as the iconic **"fishbone" deforestation pattern** (Roberts et al., 2002; Thomson, 2023).
 
 Colonisation and forest clearance in Rondônia began systematically in the early 1970s,
 and by 1986 the total cleared area had grown from just 230 km² in 1980 to over 3,390 km²,
-with road networks expanding from 110 km to more than 4,660 km over the same period. 
+with road networks expanding from 110 km to more than 4,660 km over the same period.
 Between 1986 and 2020, natural vegetation cover in Rondônia declined from 90.9% to 62.7%,
-with fragmentation increasing dramatically to produce tens of thousands of isolated forest patches. 
+with fragmentation increasing dramatically to produce tens of thousands of isolated forest patches.
 
-### 2.4 · Remote Sensing of Deforestation in Rondônia
+### 2.4 Remote Sensing of Deforestation in Rondônia
 
 Rondônia has been one of the most intensively studied regions in the remote sensing literature,
 precisely because the scale and speed of its forest loss make it an ideal test case for
 satellite-based monitoring techniques.
 
 Early studies used **Landsat Thematic Mapper** data to document clearance rates through the
-1980s and 1990s (Stone et al., 1991; Skole & Tucker, 1993). Roberts et al. (2002) applied
+1980s and 1990s (Stone et al., 1994; Skole & Tucker, 1993). Roberts et al. (2002) applied
 multitemporal spectral mixture analysis across 80,000 km² of central Rondônia, classifying
 land cover into primary forest, pasture, and secondary growth and demonstrating how road
-infrastructure drives spatial patterns of clearance. Huang et al. (2009) later extended this
-work using time-series Landsat data and the Normalised Degradation Fraction Index (NDFI) to
-distinguish between outright deforestation and subtler forest degradation — showing that as
-gross deforestation rates declined after 2004, degradation rates actually increased.
+infrastructure drives spatial patterns of clearance.
 
-The **Hansen Global Forest Change** dataset (Hansen et al., 2013) — one of the two label
-sources used in this project — emerged from this tradition, providing annual 30 m
+The **Hansen Global Forest Change** dataset (Hansen et al., 2013), one of the two label
+sources used in this project, emerged from this tradition, providing annual 30 m
 Landsat-derived loss-year maps covering the entire humid tropics from 2000 onwards. It
 remains the most widely used global deforestation reference product and has been applied
 extensively in Rondônia to quantify forest loss rates and assess the effectiveness of
@@ -190,71 +187,78 @@ conservation units (Pedlowski et al., 2005).
 More recent work has shifted toward **higher-resolution sensors**, with Sentinel-2's 10 m
 multispectral bands enabling detection of finer-scale clearance events, secondary road
 incursion, and edge degradation that 30 m Landsat data routinely misses. This resolution
-gap — and its consequences for label quality in supervised classification — is a central
+gap, and its consequences for label quality in supervised classification, is a central
 motivation for the dual-label experiment conducted in this project.
+
+---
 
 ## 3. Motivation
 
-Tropical deforestation is one of the most consequential environmental crises of the 21st 
-century. The Amazon stores an estimated 150–200 billion tonnes of carbon and absorbs 
-approximately 29% of annual anthropogenic CO₂ emissions (Gatti et al., 2021). 
-Deforestation converts this sink into a source, disrupts the regional water cycle, 
-devastates biodiversity, and risks triggering an irreversible ecological tipping point — 
-estimated to occur when forest loss exceeds 20–25% of the biome (Lovejoy & Nobre, 2018). 
+Tropical deforestation is one of the most consequential environmental crises of the 21st
+century. The Amazon stores an estimated 150 to 200 billion tonnes of carbon and absorbs
+approximately 29% of annual anthropogenic CO₂ emissions (Gatti et al., 2021).
+Deforestation converts this sink into a source, disrupts the regional water cycle,
+devastates biodiversity, and risks triggering an irreversible ecological tipping point,
+estimated to occur when forest loss exceeds 20 to 25% of the biome (Lovejoy & Nobre, 2018).
 Parts of the Amazon may already have crossed this threshold (RAISG, 2022).
 
-Monitoring deforestation at the speed and scale it occurs is beyond the capacity of 
-traditional field surveys. Satellite remote sensing combined with machine learning offers 
-the only practical solution, with Random Forest classifiers consistently achieving strong 
-performance in forest change detection tasks (Maxwell et al., 2018). However, accuracy 
-alone is insufficient for operational environmental monitoring — decision-makers need to 
-understand *why* a model flags a pixel as deforested, not just *that* it does. This 
-motivates the integration of **TreeSHAP** for pixel-level explainability, and **CodeCarbon** 
+Monitoring deforestation at the speed and scale it occurs is beyond the capacity of
+traditional field surveys. Satellite remote sensing combined with machine learning offers
+the only practical solution, with Random Forest classifiers consistently achieving strong
+performance in forest change detection tasks (Maxwell et al., 2018). However, accuracy
+alone is insufficient for operational environmental monitoring, as decision-makers need to
+understand *why* a model flags a pixel as deforested, not just *that* it does. This
+motivates the integration of **TreeSHAP** for pixel-level explainability, and **CodeCarbon**
 to ensure the carbon cost of the research itself is transparent and accountable.
+
+---
 
 ## 4. Notebook Overview & Layout
 
-The notebook is structured as a single, linear pipeline that can be run top-to-bottom 
+The notebook is structured as a single, linear pipeline that can be run top-to-bottom
 in Google Colab. It is divided into 10 sections, each clearly headed and self-contained:
 
 | Section | Content |
 |---|---|
-| 0 | Environment setup, dependency installation & CodeCarbon tracking |
-| 1 | Data loading & visual inspection of raw Sentinel-2 scenes |
-| 2 | Preprocessing — cloud masking & band stacking |
-| 3 | Feature engineering — spectral indices & temporal delta features |
-| 4A / 4B | Label preparation — **Experiment A** (Hansen GFC) & **Experiment B** (Spectral threshold) |
-| 5A / 5B | Random Forest training & evaluation for each experiment |
+| 0 | Environment setup, dependency installation and CodeCarbon tracking |
+| 1 | Data loading and visual inspection of raw Sentinel-2 scenes |
+| 2 | Preprocessing, cloud masking and band stacking |
+| 3 | Feature engineering, spectral indices and temporal delta features |
+| 4A / 4B | Label preparation, **Experiment A** (Hansen GFC) and **Experiment B** (Spectral threshold) |
+| 5A / 5B | Random Forest training and evaluation for each experiment |
 | 6 | Side-by-side experiment comparison |
 | 7 | Full-scene prediction map (Experiment B model) |
 | 8 | TreeSHAP explainability analysis |
-| 9 | Area statistics & environmental assessment |
-| 10 | Critical discussion & limitations |
+| 9 | Area statistics and environmental assessment |
+| 10 | Critical discussion and limitations |
 
 ### Why two experiments?
 
-A central methodological challenge in supervised deforestation mapping is the choice of 
-training labels. Labels that are spatially or temporally misaligned with the imagery will 
-degrade model performance regardless of classifier quality. Rather than simply adopting 
+A central methodological challenge in supervised deforestation mapping is the choice of
+training labels. Labels that are spatially or temporally misaligned with the imagery will
+degrade model performance regardless of classifier quality. Rather than simply adopting
 one labelling strategy, this notebook explicitly tests two:
 
-- **Experiment A** uses external labels from the **Hansen Global Forest Change** dataset — 
-  an independent, peer-reviewed ground truth at 30 m resolution. This is the principled 
+- **Experiment A** uses external labels from the **Hansen Global Forest Change** dataset,
+  an independent, peer-reviewed ground truth at 30 m resolution. This is the principled
   approach, but introduces a known spatial mismatch with Sentinel-2's native 10 m grid.
-- **Experiment B** derives labels directly from **ΔNDVI thresholding** at native 10 m 
-  resolution — achieving perfect spatial alignment at the cost of label independence.
+- **Experiment B** derives labels directly from **ΔNDVI thresholding** at native 10 m
+  resolution, achieving perfect spatial alignment at the cost of label independence.
 
-Comparing the two experiments quantifies the real-world accuracy cost of cross-sensor 
-label misalignment and produces an honest, critical methodological discussion. The full 
-scene prediction map and TreeSHAP analysis in Sections 7–8 use the Experiment B model, 
+Comparing the two experiments quantifies the real-world accuracy cost of cross-sensor
+label misalignment and produces an honest, critical methodological discussion. The full
+scene prediction map and TreeSHAP analysis in Sections 7 and 8 use the Experiment B model,
 with this choice explicitly justified.
 
-> **Note:** All figures are saved automatically to the `Figures/` folder in your 
-> Google Drive project directory on each run.
+> **Note:** All figures are saved automatically to the `Figures/` folder in your
+> Google Drive project directory on each run. Figures are numbered as generated by the
+> notebook and referenced consistently throughout this README.
+
+---
 
 ## 5. Data Sourcing & Preprocessing
 
-### 5.1 · Environment Setup (Section 0)
+### 5.1 Environment Setup (Section 0)
 
 The notebook runs entirely in **Google Colab** with all dependencies installed at runtime.
 The following packages are installed and imported:
@@ -262,11 +266,11 @@ The following packages are installed and imported:
 | Package | Purpose |
 |---|---|
 | `rasterio` | Reading, writing and resampling GeoTIFF rasters |
-| `numpy` / `pandas` | Array operations and tabular data handling |
+| `numpy` and `pandas` | Array operations and tabular data handling |
 | `scikit-learn` | Random Forest classifier, train/test split, evaluation metrics |
-| `shap` | TreeSHAP explainability — Shapley value computation |
+| `shap` | TreeSHAP explainability, Shapley value computation |
 | `codecarbon` | Carbon emissions tracking across the full notebook runtime |
-| `matplotlib` / `seaborn` | All figures and visualisations |
+| `matplotlib` and `seaborn` | All figures and visualisations |
 | `geopandas` | Geospatial vector operations |
 | `joblib` | Model serialisation |
 | `psutil` | RAM monitoring during tiled full-scene prediction |
@@ -277,41 +281,41 @@ to `emissions.csv` in the project Google Drive directory. Results are reported i
 
 ---
 
-### 5.2 · Sentinel-2 Data (Sections 1 & 2)
+### 5.2 Sentinel-2 Data (Sections 1 and 2)
 
 **What is Sentinel-2?**
 
 Sentinel-2 is a twin-satellite constellation operated by the European Space Agency (ESA)
 as part of the Copernicus Earth Observation programme. The Multispectral Instrument (MSI)
 aboard each satellite captures 13 spectral bands ranging from visible to shortwave
-infrared, at spatial resolutions of 10 m, 20 m, and 60 m (ESA, 2021). The combined
+infrared, at spatial resolutions of 10 m, 20 m, and 60 m (ESA, 2015). The combined
 constellation provides a **5-day revisit frequency** at the equator and a **290 km swath
 width**, making it one of the most capable freely available optical sensors for land
 monitoring at scale.
 
-We use **Level-2A** products — atmospherically corrected **surface reflectance** — downloaded
+We use **Level-2A** products, atmospherically corrected **surface reflectance**, downloaded
 from the [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu). All data
 are free and open access under the Copernicus Open Access policy.
 
 <p align="center">
-  <img src="Figures/B3 - 560nm NDWI.png" 
-       alt="Sentinel-2 MSI data acquisition over Rondônia, Brazil" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/B3%20-%20560nm%20NDWI.png"
+       alt="Sentinel-2 MSI data acquisition over Rondônia, Brazil"
        width="75%"/>
 </p>
 
-*The Sentinel-2 satellite constellation (ESA Copernicus) operates at 786 km altitude in a 
-sun-synchronous orbit, capturing reflected solar radiance across 13 spectral bands via its 
-Multispectral Instrument (MSI). The MSI uses a **pushbroom scanning** approach — rather than 
-sweeping a mirror, a fixed linear detector array images the full 290 km swath width 
-simultaneously as the satellite passes overhead. Light enters through a three-mirror TMA 
-telescope (silicon carbide structure), is split by a dichroic beamsplitter into visible/NIR 
-and SWIR wavelengths, and focused onto two focal plane assemblies: a CMOS array (VNIR, 
-bands B1–B8a) and a cooled HgCdTe array (SWIR, B9–B12). Stripe filters mounted on the 
-detectors separate individual spectral channels. This study extracts five bands 
-(**B3, B4, B8, B11, B12**) from two dry-season Level-2A surface reflectance acquisitions 
-over tile T20LKP (BR-364 corridor, Rondônia) in September 2019 and September 2022, 
-deriving NDVI, NBR, and NDWI indices and their temporal deltas (ΔNDVI, ΔNBR) as 
-features for Random Forest deforestation classification.*
+<p align="center">
+  <b>Figure 3 -</b> The Sentinel-2 satellite constellation (ESA Copernicus) operates at 786 km altitude in a
+  sun-synchronous orbit, capturing reflected solar radiance across 13 spectral bands via its
+  Multispectral Instrument (MSI). The MSI uses a pushbroom scanning approach where a fixed linear
+  detector array images the full 290 km swath width simultaneously as the satellite passes overhead.
+  Light enters through a three-mirror TMA telescope (silicon carbide structure), is split by a dichroic
+  beamsplitter into visible/NIR and SWIR wavelengths, and focused onto two focal plane assemblies, a
+  CMOS array (VNIR, bands B1 to B8a) and a cooled HgCdTe array (SWIR, B9 to B12). This study extracts
+  five bands (B3, B4, B8, B11, B12) from two dry-season Level-2A surface reflectance acquisitions
+  over tile T20LKP (BR-364 corridor, Rondônia) in September 2019 and September 2022,
+  deriving NDVI, NBR, and NDWI indices and their temporal deltas (ΔNDVI, ΔNBR) as
+  features for Random Forest deforestation classification.
+</p>
 
 **Scene selection rationale**
 
@@ -320,12 +324,12 @@ covering the BR-364 corridor in central Rondônia:
 
 | Scene | Filename | Acquisition date | Rationale |
 |---|---|---|---|
-| **Epoch 1** | `S2A_MSIL2A_20190916T143751_N0500_R096_T20LKP` | 16 Sept 2019 | Pre-change baseline; dry season minimises cloud cover and vegetation moisture stress |
-| **Epoch 2** | `S2A_MSIL2A_20220920T143731_N0510_R096_T20LKP` | 20 Sept 2022 | Post-change image; same sensor, same orbit, same season — maximises spectral comparability |
+| **Epoch 1** | `S2A_MSIL2A_20190916T143751_N0500_R096_T20LKP` | 16 Sept 2019 | Pre-change baseline, dry season minimises cloud cover and vegetation moisture stress |
+| **Epoch 2** | `S2A_MSIL2A_20220920T143731_N0510_R096_T20LKP` | 20 Sept 2022 | Post-change image, same sensor, same orbit, same season, maximises spectral comparability |
 
 Dry-season acquisition is critical because wet-season cloud cover in Rondônia routinely
 exceeds 80%, making optical change detection impractical. Matching the calendar month
-across years minimises phenological variation — ensuring that NDVI differences reflect
+across years minimises phenological variation, ensuring that NDVI differences reflect
 land cover change rather than seasonal vegetation cycles.
 
 **Bands extracted and their roles**
@@ -335,9 +339,9 @@ land cover change rather than seasonal vegetation cycles.
 | B3 | 560 nm (Green) | 10 m | NDWI (water content) |
 | B4 | 665 nm (Red) | 10 m | NDVI (vegetation vigour) |
 | B8 | 842 nm (NIR) | 10 m | NDVI, NBR, NDWI |
-| B11 | 1610 nm (SWIR-1) | 20 m | Bare soil / moisture proxy |
+| B11 | 1610 nm (SWIR-1) | 20 m | Bare soil and moisture proxy |
 | B12 | 2190 nm (SWIR-2) | 20 m | NBR (burn ratio) |
-| SCL | — | 20 m | Scene Classification Layer → cloud mask |
+| SCL | — | 20 m | Scene Classification Layer, cloud mask |
 
 **Preprocessing pipeline (Section 2)**
 
@@ -348,12 +352,12 @@ Each `.SAFE` archive is processed into a clean 5-band, NaN-masked, 10 m GeoTIFF:
 3. SCL classes 3 (cloud shadow), 8 (medium cloud), 9 (high cloud) and 10 (cirrus)
    are set to `NaN` in all bands, removing contaminated pixels from all downstream analysis
 
-Cloud cover was minimal for both acquisitions (<3%), which is typical for dry-season
+Cloud cover was minimal for both acquisitions (less than 3%), which is typical for dry-season
 Rondônia imagery and confirms the scene selection was appropriate.
 
 ---
 
-### 5.3 · Hansen Global Forest Change Data
+### 5.3 Hansen Global Forest Change Data
 
 **What is Hansen GFC?**
 
@@ -365,26 +369,26 @@ encodes the year in which each pixel first experienced canopy loss, allowing
 deforestation to be temporally attributed at annual resolution.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_LabelComparison.png" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_LabelComparison.png"
        width="90%"/>
 </p>
 
 <p align="center">
-  <b>Figure X — Resolution mismatch: Hansen GFC (30 m) vs Spectral Threshold labels (10 m).</b>
-  The zoomed regions (black boxes) reveal the core labelling challenge. Left: Hansen labels 
-  show large rectangular blocks — artefacts of resampling 30 m Landsat pixels onto the 10 m 
-  Sentinel-2 grid, where 1 Landsat pixel maps to 9 Sentinel-2 pixels. Many spectrally 
-  deforested pixels are mislabelled as stable forest simply because they fall within a 
-  majority-forest Landsat block. Right: Spectral threshold labels at native 10 m resolution 
-  capture fine-grained individual clearings, narrow road incursions and small plot boundaries 
-  invisible at 30 m. This spatial mismatch is the primary cause of Experiment A's near-random 
+  <b>Figure 4 -</b> Resolution mismatch between Hansen GFC (30 m) and Spectral Threshold labels (10 m).
+  The zoomed regions (black boxes) reveal the core labelling challenge. Left: Hansen labels
+  show large rectangular blocks, artefacts of resampling 30 m Landsat pixels onto the 10 m
+  Sentinel-2 grid, where 1 Landsat pixel maps to 9 Sentinel-2 pixels. Many spectrally
+  deforested pixels are mislabelled as stable forest simply because they fall within a
+  majority-forest Landsat block. Right: Spectral threshold labels at native 10 m resolution
+  capture fine-grained individual clearings, narrow road incursions and small plot boundaries
+  invisible at 30 m. This spatial mismatch is the primary cause of Experiment A's near-random
   accuracy (OA = 0.538, κ = 0.077) and directly motivates the dual-experiment design.
 </p>
 
 **Why Hansen for Experiment A?**
 
 Hansen GFC is used as the label source in **Experiment A** because it represents an
-**independent, externally validated ground truth** — the labels are entirely derived from
+**independent, externally validated ground truth**, as the labels are entirely derived from
 Landsat imagery and are not influenced by the Sentinel-2 features used to train the
 model. This is methodologically the most rigorous approach and mirrors standard
 practice in the remote sensing literature (Tyukavina et al., 2017).
@@ -393,59 +397,61 @@ practice in the remote sensing literature (Tyukavina et al., 2017).
 
 The Hansen loss-year raster for tile T20LKP was downloaded via **Google Earth Engine
 (GEE)** and exported as `Hansen_LossYear_T20LKP.tif`, co-registered to the Sentinel-2
-tile extent. Pixels with loss-year values 19–22 (corresponding to 2019–2022) are
+tile extent. Pixels with loss-year values 19 to 22 (corresponding to 2019 to 2022) are
 assigned **Class 1 (deforested)**; pixels with loss-year = 0 (no detected loss) are
 assigned **Class 0 (stable forest)**.
 
 **The resolution mismatch challenge**
 
-A key limitation — and central motivation for Experiment B — is the spatial resolution
+A key limitation, and central motivation for Experiment B, is the spatial resolution
 difference between Hansen (30 m) and Sentinel-2 (10 m). When resampled to 10 m via
 nearest-neighbour interpolation, each Hansen pixel maps to approximately 9 Sentinel-2
-pixels, creating "blocky" label boundaries that do not align with spectral edges in
+pixels, creating blocky label boundaries that do not align with spectral edges in
 the imagery. This misalignment is quantified in Section 7 (Experiment A achieves only
 OA = 0.538) and critically discussed in Section 10.
 
+---
+
 ## 6. Methodological Framework
 
-### 6.1 · Feature Engineering: Spectral Indices & Temporal Deltas
+### 6.1 Feature Engineering: Spectral Indices and Temporal Deltas
 
-Raw spectral reflectance values alone are poor training features for deforestation 
-detection — they vary with sun angle, atmospheric conditions, and seasonal phenology. 
-Instead, we derive **normalised spectral indices** that are physically meaningful, 
-dimensionless, and largely invariant to these confounds. Eight features are engineered 
+Raw spectral reflectance values alone are poor training features for deforestation
+detection as they vary with sun angle, atmospheric conditions, and seasonal phenology.
+Instead, we derive **normalised spectral indices** that are physically meaningful,
+dimensionless, and largely invariant to these confounds. Eight features are engineered
 per pixel from the five extracted bands:
 
 #### Normalised Difference Vegetation Index (NDVI)
 
 $$NDVI = \frac{B8 - B4}{B8 + B4}$$
 
-NDVI exploits the strong contrast between near-infrared reflectance (B8), which is high 
-in healthy vegetation due to cell structure scattering, and red reflectance (B4), which 
-is low due to chlorophyll absorption. Dense tropical forest produces NDVI values of 
-0.6–0.9; cleared or degraded land drops to 0.1–0.4. NDVI is computed for both 2019 and 
+NDVI exploits the strong contrast between near-infrared reflectance (B8), which is high
+in healthy vegetation due to cell structure scattering, and red reflectance (B4), which
+is low due to chlorophyll absorption. Dense tropical forest produces NDVI values of
+0.6 to 0.9; cleared or degraded land drops to 0.1 to 0.4. NDVI is computed for both 2019 and
 2022 epochs, providing a baseline and post-change vegetation measure.
 
 #### Normalised Burn Ratio (NBR)
 
 $$NBR = \frac{B8 - B12}{B8 + B12}$$
 
-NBR contrasts NIR (B8) with shortwave infrared (B12, 2190 nm). Healthy forest has high 
-NIR and low SWIR-2 reflectance, giving strongly positive NBR. Fire-cleared or 
-mechanically cleared land shows sharply reduced NIR and elevated SWIR-2 (exposed soil 
-and char), collapsing NBR toward zero or negative values. In Rondônia, where both 
-fire-preceded and direct mechanical clearing occur (confirmed by the SHAP dependence 
+NBR contrasts NIR (B8) with shortwave infrared (B12, 2190 nm). Healthy forest has high
+NIR and low SWIR-2 reflectance, giving strongly positive NBR. Fire-cleared or
+mechanically cleared land shows sharply reduced NIR and elevated SWIR-2 (exposed soil
+and char), collapsing NBR toward zero or negative values. In Rondônia, where both
+fire-preceded and direct mechanical clearing occur (confirmed by the SHAP dependence
 plot in Section 9), NBR is a critical complementary feature to NDVI.
 
 #### Normalised Difference Water Index (NDWI)
 
 $$NDWI = \frac{B3 - B8}{B3 + B8}$$
 
-NDWI uses green (B3) and NIR (B8) to estimate canopy moisture content. Intact forest 
-maintains high canopy water content, suppressing green reflectance relative to NIR 
-(negative NDWI). Deforestation exposes dry soil and reduces canopy moisture, shifting 
-NDWI toward positive values. NDWI also helps distinguish water bodies from cleared 
-land — important in the Madeira river corridor.
+NDWI uses green (B3) and NIR (B8) to estimate canopy moisture content. Intact forest
+maintains high canopy water content, suppressing green reflectance relative to NIR
+(negative NDWI). Deforestation exposes dry soil and reduces canopy moisture, shifting
+NDWI toward positive values. NDWI also helps distinguish water bodies from cleared
+land, which is important in the Madeira river corridor.
 
 #### Temporal Delta Features
 
@@ -455,12 +461,12 @@ $$\Delta NDVI = NDVI_{2022} - NDVI_{2019}$$
 
 $$\Delta NBR = NBR_{2022} - NBR_{2019}$$
 
-By differencing the same index across epochs, these features explicitly encode 
-*vegetation loss* (strongly negative ΔNDVI) and *burn or clearing signal* (strongly 
-negative ΔNBR) that occurred between September 2019 and September 2022. Acquiring both 
-scenes in the same calendar month minimises phenological noise — any residual difference 
-is attributable to land cover change rather than seasonal variation. TreeSHAP analysis 
-(Section 9) confirms that ΔNDVI is the dominant driver of model predictions 
+By differencing the same index across epochs, these features explicitly encode
+*vegetation loss* (strongly negative ΔNDVI) and *burn or clearing signal* (strongly
+negative ΔNBR) that occurred between September 2019 and September 2022. Acquiring both
+scenes in the same calendar month minimises phenological noise as any residual difference
+is attributable to land cover change rather than seasonal variation. TreeSHAP analysis
+(Section 9) confirms that ΔNDVI is the dominant driver of model predictions
 (mean |SHAP| = 0.2494), validating this feature engineering choice.
 
 The full feature vector per pixel is therefore:
@@ -468,91 +474,94 @@ The full feature vector per pixel is therefore:
 | # | Feature | Epoch | Physical meaning |
 |---:|---|---|---|
 | 1 | NDVI | 2019 | Baseline vegetation vigour |
-| 2 | NBR | 2019 | Baseline burn/moisture state |
+| 2 | NBR | 2019 | Baseline burn and moisture state |
 | 3 | NDWI | 2019 | Baseline canopy water content |
 | 4 | NDVI | 2022 | Post-change vegetation vigour |
-| 5 | NBR | 2022 | Post-change burn/moisture state |
+| 5 | NBR | 2022 | Post-change burn and moisture state |
 | 6 | NDWI | 2022 | Post-change canopy water content |
-| 7 | **ΔNDVI** | 2019→2022 | **Vegetation loss signal** |
-| 8 | **ΔNBR** | 2019→2022 | **Fire / clearing signal** |
+| 7 | **ΔNDVI** | 2019 to 2022 | **Vegetation loss signal** |
+| 8 | **ΔNBR** | 2019 to 2022 | **Fire and clearing signal** |
 
-All features are computed at native 10 m resolution across the full ~10,980 × 10,980 px 
-tile, processed in 2048 × 2048 px windows to stay within Colab's 12 GB RAM limit.
+All features are computed at native 10 m resolution across the full 10,980 x 10,980 px
+tile, processed in 2048 x 2048 px windows to stay within Colab's 12 GB RAM limit.
 
 ---
 
-### 6.2 · Random Forest Classification
+### 6.2 Random Forest Classification
 
 #### Why Random Forest?
 
 The Random Forest (Breiman, 2001) was selected as the classifier for three reasons:
 
-1. **Proven performance in remote sensing:** Random Forest consistently achieves 
-   high accuracy in land cover classification tasks, with benchmark studies reporting 
+1. **Proven performance in remote sensing:** Random Forest consistently achieves
+   high accuracy in land cover classification tasks, with benchmark studies reporting
    mean overall accuracies above 94% on well-labelled datasets (Maxwell et al., 2018).
-2. **Robustness to feature correlation:** Several of our 8 features are correlated 
-   (e.g. NDVI 2019 and NDVI 2022, r = 0.87 — see Fig 5). Random Forest's random 
-   feature subsampling at each split (`max_features='sqrt'`) prevents any single 
+2. **Robustness to feature correlation:** Several of our 8 features are correlated
+   (e.g. NDVI 2019 and NDVI 2022, r = 0.87, see Figure 5 in the notebook). Random Forest's random
+   feature subsampling at each split (`max_features='sqrt'`) prevents any single
    correlated feature from dominating all trees.
-3. **Native compatibility with TreeSHAP:** The TreeSHAP algorithm (Lundberg et al., 
-   2020) computes exact Shapley values for tree ensembles in polynomial time, making 
+3. **Native compatibility with TreeSHAP:** The TreeSHAP algorithm (Lundberg et al.,
+   2020) computes exact Shapley values for tree ensembles in polynomial time, making
    the explainability analysis computationally feasible at scale.
 
 #### How Random Forest Works
 
-A Random Forest is an ensemble of **B decision trees**, each trained on a bootstrap 
-sample of the training data (sampling with replacement). At each node split, only a 
-random subset of √p features is considered (where p = 8 here, so √8 ≈ 3 features per 
-split). This **double randomisation** — in both samples and features — decorrelates 
+A Random Forest is an ensemble of **B decision trees**, each trained on a bootstrap
+sample of the training data (sampling with replacement). At each node split, only a
+random subset of √p features is considered (where p = 8 here, so √8 ≈ 3 features per
+split). This **double randomisation** in both samples and features decorrelates
 the trees so that averaging their predictions reduces variance without increasing bias.
 
-For a pixel **x** with feature vector [NDVI₂₀₁₉, NBR₂₀₁₉, ..., ΔNDVI, ΔNBR], the 
+For a pixel **x** with feature vector [NDVI₂₀₁₉, NBR₂₀₁₉, ..., ΔNDVI, ΔNBR], the
 predicted class is:
 
 $$\hat{y} = \text{mode}\{T_1(\mathbf{x}), T_2(\mathbf{x}), ..., T_B(\mathbf{x})\}$$
 
-where $T_b(\mathbf{x})$ is the prediction of the $b$-th tree. With B = 200 trees, the 
-ensemble is stable and the **Out-of-Bag (OOB) score** — computed on the ~37% of 
-training samples excluded from each tree's bootstrap — provides an unbiased internal 
+where $T_b(\mathbf{x})$ is the prediction of the $b$-th tree. With B = 200 trees, the
+ensemble is stable and the **Out-of-Bag (OOB) score**, computed on the approximately 37% of
+training samples excluded from each tree's bootstrap, provides an unbiased internal
 validation estimate without requiring a separate validation set.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Random_Forest_Figure.png" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Random_Forest_Figure.png"
        width="75%"
-       alt="How Random Forest works — bootstrap sampling, decision tree anatomy, ensemble vote and key properties"/>
+       alt="How Random Forest works, bootstrap sampling, decision tree anatomy, ensemble vote and key properties"/>
 </p>
 
 <p align="center">
-  <b>Figure X — How Random Forest works.</b>
-  The four-stage pipeline: (1) bootstrap sampling creates B diverse training subsets 
-  with ~37% of pixels held out as OOB validation; (2) each subset grows an independent 
-  decision tree using recursive binary splits with random feature selection (m = √p) 
-  and Gini impurity criterion; (3) all B trees vote and the majority determines the 
-  final class; (4) averaging decorrelated trees gives low bias and low variance — 
+  <b>Figure 5 -</b> How Random Forest works.
+  The four-stage pipeline: (1) bootstrap sampling creates B diverse training subsets
+  with approximately 37% of pixels held out as OOB validation; (2) each subset grows an independent
+  decision tree using recursive binary splits with random feature selection (m = √p)
+  and Gini impurity criterion; (3) all B trees vote and the majority determines the
+  final class; (4) averaging decorrelated trees gives low bias and low variance,
   outperforming any single decision tree.<br>
   <sub>Breiman (2001). Random Forests. <i>Machine Learning</i>, 45, 5–32.</sub>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_RF_Rondonia_Dashboard.png" 
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_RF_Rondonia_Dashboard.png"
        width="75%"
-       alt="How Random Forest works — bootstrap sampling, decision tree anatomy, ensemble vote and key properties"/>
+       alt="Rondônia-specific Random Forest dashboard showing a deforested pixel passing through the full pipeline"/>
 </p>
 
 <p align="center">
-  <b>Figure X — Rondonia specific Random forest.</b>
+  <b>Figure 6 -</b> Rondônia-specific Random Forest dashboard illustrating the full pipeline
+  applied to tile T20LKP, showing an example deforested pixel (ΔNDVI = -0.31, ΔNBR = -0.20)
+  passing through 200 trees to a majority vote prediction of Class 1 (deforested), alongside
+  key project outputs including the 1,391 km² forest loss estimate and ~20.87 Mt CO₂ at risk.
 </p>
 
 #### Model Configuration
 
 ```python
 RandomForestClassifier
-    n_estimators    = 200,      # 200 trees — stable OOB estimate
-    max_features    = 'sqrt',   # √8 ≈ 3 features per split
-    class_weight    = 'balanced', # corrects for any class imbalance
-    oob_score       = True,     # unbiased internal validation
-    n_jobs          = -1,       # parallelise across all CPU cores
-    random_state    = 42        # reproducibility
+    n_estimators  = 200,        # 200 trees, stable OOB estimate
+    max_features  = 'sqrt',     # √8 ≈ 3 features per split
+    class_weight  = 'balanced', # corrects for any class imbalance
+    oob_score     = True,       # unbiased internal validation
+    n_jobs        = -1,         # parallelise across all CPU cores
+    random_state  = 42          # reproducibility
 ```
 
 #### Evaluation Metrics
@@ -562,29 +571,51 @@ Model performance is assessed using four complementary metrics:
 | Metric | Formula | Why it matters |
 |---|---|---|
 | **Overall Accuracy (OA)** | (TP + TN) / N | Global correctness |
-| **Cohen's Kappa (κ)** | (OA − P_e) / (1 − P_e) | Corrects for chance agreement — critical for imbalanced classes |
+| **Cohen's Kappa (κ)** | (OA − Pe) / (1 − Pe) | Corrects for chance agreement, critical for imbalanced classes |
 | **OOB Score** | Internal bootstrap estimate | Unbiased without held-out data |
-| **Producer / User Accuracy** | TP / (TP + FN) · TP / (TP + FP) | Per-class commission and omission errors |
+| **Producer and User Accuracy** | TP / (TP + FN) and TP / (TP + FP) | Per-class commission and omission errors |
 
-Cohen's Kappa is particularly important here because a classifier that predicts 
-"stable forest" for every pixel would achieve artificially high OA in a scene that 
-is predominantly forest. Kappa corrects for this — Experiment A's κ = 0.077 (near 
-zero) confirms the model is performing at chance level, not just predicting the 
+Cohen's Kappa is particularly important here because a classifier that predicts
+"stable forest" for every pixel would achieve artificially high OA in a scene that
+is predominantly forest. Kappa corrects for this and Experiment A's κ = 0.077 (near
+zero) confirms the model is performing at chance level, not just predicting the
 majority class.
+
+---
 
 ## 7. Experimental Design: Experiment A vs B
 
-The dual-experiment structure is the central methodological contribution of this project. Both experiments use the same Random Forest architecture (200 trees, `max_features='sqrt'`, `class_weight='balanced'`, `oob_score=True`, `random_state=42`) and the same 8-feature input vector — the only thing that changes is the source of training labels.
+The dual-experiment structure is the central methodological contribution of this project.
+Both experiments use the same Random Forest architecture (200 trees, `max_features='sqrt'`,
+`class_weight='balanced'`, `oob_score=True`, `random_state=42`) and the same 8-feature
+input vector. The only thing that changes is the source of training labels.
 
 ### Experiment A — Hansen GFC Labels
 
-Labels are drawn from the Hansen Global Forest Change product (Hansen et al., 2013), downloaded via Google Earth Engine and co-registered to the Sentinel-2 tile extent. Pixels with a Hansen loss-year value of 19–22 (2019–2022) are assigned Class 1 (deforested); pixels with loss-year = 0 are assigned Class 0 (stable forest). A balanced sample of training pixels is drawn from each class, stratified and split 80/20 into training and test sets before fitting the classifier. This is the methodologically principled approach — the labels are entirely independent of the Sentinel-2 imagery — but introduces a known 30 m → 10 m spatial resolution mismatch when the Hansen raster is resampled onto the Sentinel-2 grid.
+Labels are drawn from the Hansen Global Forest Change product (Hansen et al., 2013),
+downloaded via Google Earth Engine and co-registered to the Sentinel-2 tile extent.
+Pixels with a Hansen loss-year value of 19 to 22 (2019 to 2022) are assigned Class 1
+(deforested); pixels with loss-year = 0 are assigned Class 0 (stable forest). A balanced
+sample of training pixels is drawn from each class, stratified and split 80/20 into
+training and test sets before fitting the classifier. This is the methodologically
+principled approach as the labels are entirely independent of the Sentinel-2 imagery,
+but it introduces a known 30 m to 10 m spatial resolution mismatch when the Hansen
+raster is resampled onto the Sentinel-2 grid.
 
 ### Experiment B — Spectral Threshold Labels
 
-Labels are derived directly from the ΔNDVI feature layer at native 10 m resolution using a statistically-derived threshold. Pixels where ΔNDVI falls below (mean − 1.0 × std) are labelled Class 1 (deforested); pixels above (mean + 0.2 × std) are labelled Class 0 (stable forest). Pixels in the intermediate range are excluded from training to avoid ambiguous samples near the decision boundary. The same balanced sampling, train/test split, and classifier configuration as Experiment A are then applied. This achieves perfect spatial alignment with the feature raster but introduces a degree of circularity — the labels are derived from the same data the model learns to classify.
+Labels are derived directly from the ΔNDVI feature layer at native 10 m resolution
+using a statistically-derived threshold. Pixels where ΔNDVI falls below (mean − 1.0 × std)
+are labelled Class 1 (deforested); pixels above (mean + 0.2 × std) are labelled Class 0
+(stable forest). Pixels in the intermediate range are excluded from training to avoid
+ambiguous samples near the decision boundary. The same balanced sampling, train/test
+split, and classifier configuration as Experiment A are then applied. This achieves
+perfect spatial alignment with the feature raster but introduces a degree of circularity
+as the labels are derived from the same data the model learns to classify.
 
-The full-scene prediction map and TreeSHAP analysis (Sections 8 and 9) use the Experiment B model, with this choice explicitly justified by its superior spatial consistency. The comparison between experiments is quantified in the Results section below.
+The full-scene prediction map and TreeSHAP analysis (Sections 8 and 9) use the
+Experiment B model, with this choice explicitly justified by its superior spatial
+consistency. The comparison between experiments is quantified in the Results section below.
 
 ---
 
@@ -593,21 +624,26 @@ The full-scene prediction map and TreeSHAP analysis (Sections 8 and 9) use the E
 ### Experiment A — Hansen GFC Labels
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig6A_HansenLabels.png" width="90%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig6A_Hansen_Labels.png" width="90%"/>
 </p>
 
 <p align="center">
-  <b>Figure 6A — Experiment A: Hansen Global Forest Change Labels (2019–2022).</b><br>
-  Left: label map showing Hansen deforestation labels resampled to the 10 m Sentinel-2 grid — note the blocky 30 m boundaries. Centre: perfectly balanced training set of 20,000 pixels per class. Right: ΔNDVI violin plot by class — the heavily overlapping distributions reveal why the model struggles, with both stable forest and deforested pixels sharing similar ΔNDVI ranges under Hansen labelling.
+  <b>Figure 7 -</b> Experiment A: Hansen Global Forest Change Labels (2019 to 2022).
+  Left: label map showing Hansen deforestation labels resampled to the 10 m Sentinel-2 grid,
+  note the blocky 30 m boundaries. Centre: perfectly balanced training set of 20,000 pixels
+  per class. Right: ΔNDVI violin plot by class showing the heavily overlapping distributions,
+  with both stable forest and deforested pixels sharing similar ΔNDVI ranges under Hansen labelling.
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig7A_EvaluationDashboard_A.png" width="90%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig7A_Hansen_Evaluation.png" width="90%"/>
 </p>
 
 <p align="center">
-  <b>Figure 7A — Experiment A Evaluation: Hansen GFC Labels.</b><br>
-  OA = 0.538 · Kappa κ = 0.077 · OOB = 0.537. Raw and normalised confusion matrices alongside the full metrics table. The model correctly classifies only 55.4% of stable forest pixels and 52.3% of deforested pixels — performance indistinguishable from random guessing.
+  <b>Figure 8 -</b> Experiment A Evaluation: Hansen GFC Labels.
+  OA = 0.538, Kappa κ = 0.077, OOB = 0.537. Raw and normalised confusion matrices alongside
+  the full metrics table. The model correctly classifies only 55.4% of stable forest pixels
+  and 52.3% of deforested pixels, performance indistinguishable from random guessing.
 </p>
 
 | Metric | Forest | Deforested | Overall |
@@ -621,39 +657,59 @@ The full-scene prediction map and TreeSHAP analysis (Sections 8 and 9) use the E
 | Kappa κ | — | — | **0.077** |
 | OOB score | — | — | **0.537** |
 
-Experiment A achieves an overall accuracy of 53.8% and a Cohen's Kappa of 0.077 — effectively at chance level. This is not a failure of the Random Forest classifier; it is a label quality problem. The 30 m → 10 m resolution mismatch means that fine-scale clearing events clearly visible in the Sentinel-2 imagery fall within majority-forest Hansen blocks and are mislabelled as stable in the training data. The model is trained on contradictory supervision and cannot discriminate reliably as a result. The ΔNDVI violin plot (Figure 6A, right) makes this concrete — the two classes have heavily overlapping distributions under Hansen labelling, providing the model with no clean spectral boundary to learn from.
+Experiment A achieves an overall accuracy of 53.8% and a Cohen's Kappa of 0.077, effectively
+at chance level. This is not a failure of the Random Forest classifier; it is a label quality
+problem. The 30 m to 10 m resolution mismatch means that fine-scale clearing events clearly
+visible in the Sentinel-2 imagery fall within majority-forest Hansen blocks and are mislabelled
+as stable in the training data. The model is trained on contradictory supervision and cannot
+discriminate reliably as a result. The ΔNDVI violin plot makes this concrete as the two classes
+have heavily overlapping distributions under Hansen labelling, providing the model with no clean
+spectral boundary to learn from.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig8A_FeatureImportance_A.png" width="85%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig8A_Hansen_FeatureImportance.png" width="85%"/>
 </p>
 
 <p align="center">
-  <b>Figure 8A — RF Feature Importance (Experiment A — Hansen Labels).</b><br>
-  Importance is near-uniform across all 8 features (range: 0.124–0.130), with NDWI 2019 marginally leading. This flat distribution is a hallmark of a model trained on noisy labels — no feature provides reliable discriminative signal, so the forest distributes importance approximately equally across all splits.
+  <b>Figure 9 -</b> RF Feature Importance (Experiment A, Hansen Labels).
+  Importance is near-uniform across all 8 features (range 0.124 to 0.130), with NDWI 2019
+  marginally leading. This flat distribution is a hallmark of a model trained on noisy labels
+  as no feature provides reliable discriminative signal, so the forest distributes importance
+  approximately equally across all splits.
 </p>
 
-The feature importance plot (Figure 8A) is diagnostic: all eight features score within a narrow band of 0.124–0.130, with no clear hierarchy. In a well-supervised model, ΔNDVI and ΔNBR should dominate (as confirmed by Experiment B). The flat distribution here reflects the fact that label noise has obscured the physical signal — the model cannot identify which features are informative because the labels themselves are inconsistent.
+The feature importance plot is diagnostic: all eight features score within a narrow band of
+0.124 to 0.130, with no clear hierarchy. In a well-supervised model, ΔNDVI and ΔNBR should
+dominate (as confirmed by Experiment B). The flat distribution here reflects the fact that
+label noise has obscured the physical signal as the model cannot identify which features are
+informative because the labels themselves are inconsistent.
 
 ---
 
 ### Experiment B — Spectral Threshold Labels
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig6B_SpectralLabels.png" width="90%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig6B_Spectral_Labels.png" width="90%"/>
 </p>
 
 <p align="center">
-  <b>Figure 6B — Experiment B: Spectral Change Labels (ΔNDVI Threshold).</b><br>
-  Left: label map at native 10 m resolution — fine-grained clearing boundaries, narrow road incursions and small plot edges are captured with no resampling artefacts. Centre: balanced training set of 6,000 pixels per class (ambiguous intermediate pixels excluded). Right: ΔNDVI violin plot showing clean class separation by design — stable forest clusters tightly around positive values, deforested pixels around −0.15 to −0.20.
+  <b>Figure 10 -</b> Experiment B: Spectral Change Labels (ΔNDVI Threshold).
+  Left: label map at native 10 m resolution showing fine-grained clearing boundaries, narrow
+  road incursions and small plot edges captured with no resampling artefacts. Centre: balanced
+  training set of 6,000 pixels per class (ambiguous intermediate pixels excluded). Right: ΔNDVI
+  violin plot showing clean class separation by design, with stable forest clustering tightly
+  around positive values and deforested pixels around -0.15 to -0.20.
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig7B_EvaluationDashboard_B.png" width="90%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig7B_Spectral_Evaluation.png" width="90%"/>
 </p>
 
 <p align="center">
-  <b>Figure 7B — Experiment B Evaluation: Spectral Threshold Labels.</b><br>
-  OA = 1.000 · Kappa κ = 1.000 · OOB = 1.000. Perfect classification on the held-out test set with zero misclassified pixels in either class. This result must be interpreted carefully — see note on circularity below.
+  <b>Figure 11 -</b> Experiment B Evaluation: Spectral Threshold Labels.
+  OA = 1.000, Kappa κ = 1.000, OOB = 1.000. Perfect classification on the held-out test set
+  with zero misclassified pixels in either class. This result must be interpreted carefully,
+  see note on circularity in Section 11.
 </p>
 
 | Metric | Forest | Deforested | Overall |
@@ -667,18 +723,32 @@ The feature importance plot (Figure 8A) is diagnostic: all eight features score 
 | Kappa κ | — | — | **1.000** |
 | OOB score | — | — | **1.000** |
 
-Experiment B achieves perfect accuracy across all metrics. The confusion matrix shows zero misclassified pixels in either class on the held-out test set. This result is physically coherent — by excluding ambiguous intermediate pixels from training, the model is presented with only the clearest examples of each class, and the labels are spatially aligned with the features at native 10 m resolution. However, perfect accuracy must be interpreted with caution: because the labels are derived from ΔNDVI thresholding, and ΔNDVI is one of the eight training features, the model is in part learning a smooth approximation of the threshold function. This circularity is discussed further in Section 11.
+Experiment B achieves perfect accuracy across all metrics. The confusion matrix shows zero
+misclassified pixels in either class on the held-out test set. This result is physically
+coherent as by excluding ambiguous intermediate pixels from training, the model is presented
+with only the clearest examples of each class, and the labels are spatially aligned with the
+features at native 10 m resolution. However, perfect accuracy must be interpreted with caution
+because the labels are derived from ΔNDVI thresholding, and ΔNDVI is one of the eight training
+features, meaning the model is in part learning a smooth approximation of the threshold function.
+This circularity is discussed further in Section 11.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig8B_FeatureImportance_B.png" width="85%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig8B_Spectral_FeatureImportance.png" width="85%"/>
 </p>
 
 <p align="center">
-  <b>Figure 8B — RF Feature Importance (Experiment B — Spectral Labels).</b><br>
-  ΔNBR (0.374) and ΔNDVI (0.351) together account for 72.5% of total importance — a sharp contrast to the flat distribution in Experiment A. Single-epoch indices contribute marginally. The model has learned that temporal change, not absolute spectral state, is the dominant signal.
+  <b>Figure 12 -</b> RF Feature Importance (Experiment B, Spectral Labels).
+  ΔNBR (0.374) and ΔNDVI (0.351) together account for 72.5% of total importance, a sharp
+  contrast to the flat distribution in Experiment A. Single-epoch indices contribute marginally.
+  The model has learned that temporal change, not absolute spectral state, is the dominant signal.
 </p>
 
-The feature importance plot (Figure 8B) is the inverse of Experiment A. ΔNBR leads at 0.374, followed by ΔNDVI at 0.351 — together accounting for 72.5% of total importance. All single-epoch indices (NDVI 2019/2022, NBR 2019/2022, NDWI 2019/2022) contribute comparatively little. This hierarchy is exactly what physical reasoning predicts: a pixel's change in vegetation and burn state between 2019 and 2022 is a far stronger indicator of deforestation than its absolute reflectance in either year alone.
+The feature importance plot is the inverse of Experiment A. ΔNBR leads at 0.374, followed by
+ΔNDVI at 0.351, together accounting for 72.5% of total importance. All single-epoch indices
+(NDVI 2019 and 2022, NBR 2019 and 2022, NDWI 2019 and 2022) contribute comparatively little.
+This hierarchy is exactly what physical reasoning predicts: a pixel's change in vegetation and
+burn state between 2019 and 2022 is a far stronger indicator of deforestation than its absolute
+reflectance in either year alone.
 
 ---
 
@@ -689,15 +759,18 @@ The feature importance plot (Figure 8B) is the inverse of Experiment A. ΔNBR le
 </p>
 
 <p align="center">
-  <b>Figure 9 — Experiment A vs B: Side-by-Side Comparison.</b><br>
-  Left: metric bar chart — every score improves from ~0.54 to 1.00 between experiments. Centre: normalised confusion matrix cells for both experiments — Experiment A shows near-equal spread across all four cells; Experiment B collapses to perfect diagonal. Right: summary property table.
+  <b>Figure 13 -</b> Experiment A vs B: Side-by-Side Comparison.
+  Left: metric bar chart showing every score improving from approximately 0.54 to 1.00 between
+  experiments. Centre: normalised confusion matrix cells for both experiments, with Experiment A
+  showing near-equal spread across all four cells and Experiment B collapsing to a perfect diagonal.
+  Right: summary property table.
 </p>
 
 | Property | Exp. A (Hansen) | Exp. B (Spectral) |
 |---|---|---|
 | Label source | External GFC | ΔNDVI threshold |
-| Resolution | 30 m → 10 m | 10 m native |
-| Temporal alignment | Annual loss year | Direct 2019–2022 |
+| Resolution | 30 m to 10 m | 10 m native |
+| Temporal alignment | Annual loss year | Direct 2019 to 2022 |
 | Training N | 40,000 | 12,000 |
 | OA | 0.538 | 1.000 |
 | Kappa κ | 0.077 | 1.000 |
@@ -714,12 +787,21 @@ The feature importance plot (Figure 8B) is the inverse of Experiment A. ΔNBR le
 </p>
 
 <p align="center">
-  <b>Figure 10 — Full-Scene Deforestation Prediction Map, Rondônia 2019–2022.</b><br>
-  Green = stable forest · Red = deforested (2019–22) · Grey = no data (cloud/shadow masked).<br>
-  Left: full tile overview (Forest: 10,069 km² · Deforested: 1,391 km²). Right: central 6×6 km crop clearly resolving the fishbone deforestation pattern along the BR-364 road network.
+  <b>Figure 14 -</b> Full-Scene Deforestation Prediction Map, Rondônia 2019 to 2022.
+  Green = stable forest, Red = deforested (2019 to 2022), Grey = no data (cloud/shadow masked).
+  Left: full tile overview (Forest: 10,069 km², Deforested: 1,391 km²). Right: central 6 x 6 km
+  crop clearly resolving the fishbone deforestation pattern along the BR-364 road network.
 </p>
 
-The Experiment B model is applied to the full ~10,980 × 10,980 pixel Sentinel-2 tile in 2,048-pixel windows to stay within Colab's RAM limit. The prediction map identifies **1,391 km²** of forest loss across the tile between 2019 and 2022, against 10,069 km² of stable forest. The central crop (Figure 10, right) clearly resolves the fishbone deforestation pattern — clearing strips extending perpendicularly from road spines — that is the defining spatial signature of colonisation-era land clearance in Rondônia (Roberts et al., 2002). Applying a tropical forest carbon density of 150 tC/ha and a CO₂ conversion factor of 3.67, the mapped loss area represents approximately **≈20.87 Mt CO₂ at risk** — equivalent to the annual emissions of several million cars, stored in forest that no longer exists.
+The Experiment B model is applied to the full 10,980 x 10,980 pixel Sentinel-2 tile in
+2,048-pixel windows to stay within Colab's RAM limit. The prediction map identifies **1,391 km²**
+of forest loss across the tile between 2019 and 2022, against 10,069 km² of stable forest. The
+central crop clearly resolves the fishbone deforestation pattern, clearing strips extending
+perpendicularly from road spines, that is the defining spatial signature of colonisation-era
+land clearance in Rondônia (Roberts et al., 2002). Applying a tropical forest carbon density
+of 150 tC/ha and a CO₂ conversion factor of 3.67, the mapped loss area represents approximately
+**20.87 Mt CO₂ at risk**, equivalent to the annual emissions of several million cars, stored
+in forest that no longer exists.
 
 ---
 
@@ -727,15 +809,26 @@ The Experiment B model is applied to the full ~10,980 × 10,980 pixel Sentinel-2
 
 ### What is Explainable AI and Why Does it Matter?
 
-Achieving high classification accuracy is necessary but not sufficient for operational environmental monitoring. A model that correctly flags a pixel as deforested but cannot explain *why* it did so offers little to the scientists, policymakers, and conservationists who need to act on its outputs. This is the core motivation for **Explainable AI (XAI)** — a family of methods that open the black box and attribute predictions back to individual input features.
+Achieving high classification accuracy is necessary but not sufficient for operational
+environmental monitoring. A model that correctly flags a pixel as deforested but cannot
+explain *why* it did so offers little to the scientists, policymakers, and conservationists
+who need to act on its outputs. This is the core motivation for **Explainable AI (XAI)**,
+a family of methods that open the black box and attribute predictions back to individual
+input features.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig_XAI_TreeSHAP.png" width="85%"/>
 </p>
 
 <p align="center">
+  <b>Figure 15 -</b> How Explainable AI works compared to standard machine learning,
+  and how TreeSHAP attributes each prediction to individual input features across all 200 trees.
+</p>
 
-This project uses **TreeSHAP** (Lundberg et al., 2020), the state-of-the-art explainability method for tree-based models. SHAP values are grounded in **cooperative game theory** (Shapley, 1953): each feature's contribution to a prediction is its fair share of the total model output, computed by averaging over all possible orderings of features. This satisfies three important axioms:
+This project uses **TreeSHAP** (Lundberg et al., 2020), the state-of-the-art explainability
+method for tree-based models. SHAP values are grounded in **cooperative game theory**:
+each feature's contribution to a prediction is its fair share of the total model output,
+computed by averaging over all possible orderings of features. This satisfies three important axioms:
 
 | Axiom | Meaning |
 |---|---|
@@ -743,30 +836,38 @@ This project uses **TreeSHAP** (Lundberg et al., 2020), the state-of-the-art exp
 | **Symmetry** | Two features with identical contributions receive identical SHAP values |
 | **Null player** | A feature that never affects any prediction receives a SHAP value of zero |
 
-Unlike standard feature importance (which averages impurity reduction across all trees and all predictions), TreeSHAP computes **exact Shapley values for each individual pixel** in polynomial time — making it both theoretically rigorous and computationally feasible at scale. The result is that every prediction in the map can be decomposed into a signed contribution from each of the 8 features, answering not just *which* features matter globally, but *how* and *why* the model responded to a specific pixel.
+Unlike standard feature importance (which averages impurity reduction across all trees and
+all predictions), TreeSHAP computes **exact Shapley values for each individual pixel** in
+polynomial time, making it both theoretically rigorous and computationally feasible at scale.
+The result is that every prediction in the map can be decomposed into a signed contribution
+from each of the 8 features, answering not just *which* features matter globally, but *how*
+and *why* the model responded to a specific pixel.
 
-TreeSHAP is run on the **Experiment B model** — the higher-accuracy, spatially-aligned classifier — using a stratified sample of 5,000 pixels (2,500 deforested, 2,500 stable forest).
+TreeSHAP is run on the **Experiment B model**, the higher-accuracy, spatially-aligned
+classifier, using a stratified sample of 5,000 pixels (2,500 deforested, 2,500 stable forest).
 
 ---
 
-### Figure 11 — Global Feature Importance
+### Global Feature Importance
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig11_SHAP_GlobalBar.png" width="85%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig11_SHAP_GlobalBarPlot.png" width="85%"/>
 </p>
 
 <p align="center">
-  <b>Figure 11 — TreeSHAP Global Feature Importance (Experiment B).</b><br>
-  Mean |SHAP value| per feature across the deforested class sample. ΔNDVI (0.2494) and ΔNBR (0.1419) 
+  <b>Figure 16 -</b> TreeSHAP Global Feature Importance (Experiment B).
+  Mean |SHAP value| per feature across the deforested class sample. ΔNDVI (0.2494) and ΔNBR (0.1419)
   together account for 76% of total importance. All single-epoch indices contribute marginally by comparison.
 </p>
 
-The global bar chart ranks features by their mean absolute SHAP value — the average magnitude of each feature's contribution to the deforested class prediction across all 5,000 sample pixels. The hierarchy is unambiguous:
+The global bar chart ranks features by their mean absolute SHAP value, the average magnitude
+of each feature's contribution to the deforested class prediction across all 5,000 sample pixels.
+The hierarchy is unambiguous:
 
-| Feature | Mean \|SHAP\| | Interpretation |
+| Feature | Mean |SHAP| | Interpretation |
 |---|---|---|
-| **ΔNDVI (Change)** | **0.2494** | Dominant signal — temporal vegetation loss |
-| **ΔNBR (Change)** | **0.1419** | Secondary signal — fire and clearing |
+| **ΔNDVI (Change)** | **0.2494** | Dominant signal, temporal vegetation loss |
+| **ΔNBR (Change)** | **0.1419** | Secondary signal, fire and clearing |
 | NDVI 2019 | 0.0392 | Baseline vegetation state |
 | NDWI 2019 | 0.0295 | Baseline canopy moisture |
 | NDWI 2022 | 0.0256 | Post-change canopy moisture |
@@ -774,116 +875,154 @@ The global bar chart ranks features by their mean absolute SHAP value — the av
 | NBR 2022 | 0.0080 | Post-change burn state |
 | NBR 2019 | 0.0076 | Baseline burn state |
 
-ΔNDVI alone accounts for nearly half of total predictive attribution. This confirms that the model has learned **temporal change** — vegetation loss between 2019 and 2022 — rather than the absolute spectral state of either epoch. This directly validates the feature engineering decision made in Section 6 and is consistent with the Experiment B feature importance plot (Figure 8B), where ΔNBR and ΔNDVI jointly dominated at 72.5% of Gini importance. SHAP and Gini importance converge on the same physical story, providing mutual validation.
+ΔNDVI alone accounts for nearly half of total predictive attribution. This confirms that the
+model has learned **temporal change**, vegetation loss between 2019 and 2022, rather than the
+absolute spectral state of either epoch. This directly validates the feature engineering
+decision made in Section 6 and is consistent with the Experiment B feature importance plot,
+where ΔNBR and ΔNDVI jointly dominated at 72.5% of Gini importance. SHAP and Gini importance
+converge on the same physical story, providing mutual validation.
 
 ---
 
-### Figure 12 — Beeswarm Plot
+### Beeswarm Plot
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig12_SHAP_Beeswarm.png" width="85%"/>
 </p>
 
 <p align="center">
-  <b>Figure 12 — TreeSHAP Beeswarm Plot (Deforested class — Experiment B).</b><br>
-  Each dot = one pixel. X-axis = SHAP value (impact on model output toward deforested). 
-  Colour = raw feature value (pink = high, blue = low). ΔNDVI dots cluster far right 
-  at high SHAP values, all pink — high ΔNDVI (stable vegetation) pushes strongly away from deforested.
+  <b>Figure 17 -</b> TreeSHAP Beeswarm Plot (Deforested class, Experiment B).
+  Each dot represents one pixel. The x-axis shows the SHAP value (impact on model output toward
+  deforested) and colour shows the raw feature value (pink = high, blue = low). Pixels with
+  strongly negative ΔNDVI (blue, large vegetation loss) cluster far right with the largest
+  positive contributions toward predicting deforestation.
 </p>
 
-The beeswarm adds **direction and spread** to the global ranking. For ΔNDVI, the dots form a tight rightward cluster coloured uniformly pink — meaning pixels with *high* ΔNDVI values (little or no vegetation loss) generate large positive SHAP contributions toward the deforested class... but wait: reading the colour scale carefully, pink = high feature value. For the deforested class, the pixels driving the largest positive SHAP values are those with *high* ΔNDVI — but this is because the SHAP values shown are for the deforested class probability. Pixels with strongly *negative* ΔNDVI (large vegetation loss, blue) cluster to the far right with the largest positive contributions toward predicting deforestation, while high-ΔNDVI pixels (stable vegetation, pink) generate negative SHAP values, pushing predictions away from the deforested class.
+The beeswarm adds **direction and spread** to the global ranking. Pixels with strongly
+negative ΔNDVI (large vegetation loss, shown in blue) cluster to the far right with the
+largest positive contributions toward predicting deforestation, while pixels with high ΔNDVI
+(stable vegetation, shown in pink) generate negative SHAP values, pushing predictions away
+from the deforested class.
 
-For ΔNBR, a similar but slightly broader distribution reflects the secondary fire/clearing signal. The single-epoch features (NBR 2019/2022, NDWI 2019/2022) show narrow distributions clustered near zero — confirming they contribute little discriminative power once the temporal change features are available.
+For ΔNBR, a similar but slightly broader distribution reflects the secondary fire and clearing
+signal. The single-epoch features (NBR 2019 and 2022, NDWI 2019 and 2022) show narrow
+distributions clustered near zero, confirming they contribute little discriminative power
+once the temporal change features are available.
 
 ---
 
-### Figure 13 — SHAP Dependence Plot
+### SHAP Dependence Plot
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig13_SHAP_DependencePlot.png" width="85%"/>
 </p>
 
 <p align="center">
-  <b>Figure 13 — SHAP Dependence Plot: ΔNDVI × ΔNBR Interaction.</b><br>
-  X-axis = ΔNDVI value · Y-axis = SHAP value for deforested class · Colour = ΔNBR value 
-  (warm pink = fire-preceded clearing · cool blue = direct mechanical clearing). 
-  The dashed vertical line marks the −0.25 ΔNDVI threshold of the strong deforestation zone.
+  <b>Figure 18 -</b> SHAP Dependence Plot showing the ΔNDVI and ΔNBR interaction.
+  The x-axis shows ΔNDVI value, the y-axis shows the SHAP value for the deforested class,
+  and colour shows ΔNBR value (warm pink = fire-preceded clearing, cool blue = direct
+  mechanical clearing). The dashed vertical line marks the -0.25 ΔNDVI threshold of the
+  strong deforestation zone.
 </p>
 
-The dependence plot is the most physically informative of the four SHAP figures. It plots each pixel's ΔNDVI value against its SHAP contribution to the deforested prediction, coloured by ΔNBR — revealing the **interaction between the two dominant features**.
+The dependence plot is the most physically informative of the four SHAP figures. It plots
+each pixel's ΔNDVI value against its SHAP contribution to the deforested prediction, coloured
+by ΔNBR, revealing the **interaction between the two dominant features**.
 
-Two distinct patterns emerge to the left of the −0.25 ΔNDVI threshold (the strong deforestation zone, shaded pink):
+Two distinct patterns emerge to the left of the -0.25 ΔNDVI threshold (the strong deforestation
+zone, shaded pink):
 
-- **Warm-coloured pixels (high ΔNBR):** elevated shortwave infrared relative to NIR — the spectral signature of fire-exposed ground, char, and ash. These pixels represent **fire-preceded clearing**, where vegetation is first burned before the land is converted. This is one of the dominant clearance mechanisms in Rondônia, consistent with the literature on Amazon frontier agriculture (Fearnside, 2005).
-- **Cool-coloured pixels (low/negative ΔNBR):** no elevated SWIR signal — vegetation loss without a corresponding burn signature, indicating **direct mechanical clearing** by bulldozers or chainsaw without fire. Both pathways converge on similarly large positive SHAP values, confirming the model captures both mechanisms without being explicitly trained to distinguish them.
+- **Warm-coloured pixels (high ΔNBR):** elevated shortwave infrared relative to NIR, the
+  spectral signature of fire-exposed ground, char, and ash. These pixels represent
+  **fire-preceded clearing**, where vegetation is first burned before the land is converted.
+  This is one of the dominant clearance mechanisms in Rondônia, consistent with the literature
+  on Amazon frontier agriculture (Fearnside & Salati, 1985).
+- **Cool-coloured pixels (low/negative ΔNBR):** no elevated SWIR signal, vegetation loss
+  without a corresponding burn signature, indicating **direct mechanical clearing** by
+  bulldozers or chainsaw without fire. Both pathways converge on similarly large positive
+  SHAP values, confirming the model captures both mechanisms without being explicitly
+  trained to distinguish them.
 
-This is a finding that standard accuracy metrics and feature importance plots cannot reveal — it emerges only through the interaction-aware SHAP dependence analysis.
+This is a finding that standard accuracy metrics and feature importance plots cannot reveal
+as it emerges only through the interaction-aware SHAP dependence analysis.
 
 ---
 
-### Figure 14 — Single Pixel Waterfall
+### Single Pixel Waterfall
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig14_SHAP_Waterfall.png" width="85%"/>
+  <img src="https://raw.githubusercontent.com/IonaBoulton/-GEOL0069-XAI-Deforestation_Detection_in_Rond-nia-Brazil-Random-Forest-Classification-and-TreeSHAP/main/Figures/Fig14_SHAP_WaterfallSinglePixel.png" width="85%"/>
 </p>
 
 <p align="center">
-  <b>Figure 14 — SHAP Waterfall: Single Pixel Explanation (Experiment B).</b><br>
-  Most-confidently deforested pixel (p = 1.000). Each bar shows one feature's contribution 
-  from the global baseline E[f(x)] = 0.5 to the final prediction f(x) = 1.0. 
-  ΔNDVI (+0.26) and ΔNBR (+0.15) together account for 82% of the total push from baseline to prediction.
+  <b>Figure 19 -</b> SHAP Waterfall showing a single pixel explanation (Experiment B).
+  Most-confidently deforested pixel (p = 1.000). Each bar shows one feature's contribution
+  from the global baseline E[f(x)] = 0.5 to the final prediction f(x) = 1.0.
+  ΔNDVI (+0.26) and ΔNBR (+0.15) together account for 82% of the total push from baseline
+  to prediction.
 </p>
 
-The waterfall plot provides a **single-pixel explanation** for the most confidently deforested pixel in the SHAP sample (predicted probability = 1.000). Starting from the global baseline of E[f(x)] = 0.5 — the model's average prediction across all pixels — each bar shows how much one feature shifts the prediction up or down:
+The waterfall plot provides a **single-pixel explanation** for the most confidently deforested
+pixel in the SHAP sample (predicted probability = 1.000). Starting from the global baseline
+of E[f(x)] = 0.5, the model's average prediction across all pixels, each bar shows how much
+one feature shifts the prediction up or down:
 
 | Feature | Raw value | SHAP contribution |
 |---|---|---|
-| **ΔNDVI (Change)** | **−0.139** | **+0.26** |
-| **ΔNBR (Change)** | **−0.114** | **+0.15** |
-| NDWI 2022 | −0.337 | +0.03 |
+| **ΔNDVI (Change)** | **-0.139** | **+0.26** |
+| **ΔNBR (Change)** | **-0.114** | **+0.15** |
+| NDWI 2022 | -0.337 | +0.03 |
 | NDVI 2022 | 0.376 | +0.02 |
 | NDVI 2019 | 0.515 | +0.01 |
-| NDWI 2019 | −0.449 | +0.01 |
+| NDWI 2019 | -0.449 | +0.01 |
 | NBR 2019 | 0.401 | +0.01 |
 | NBR 2022 | 0.287 | +0.01 |
 
-This pixel shows strongly negative ΔNDVI (−0.139) and ΔNBR (−0.114) — a large drop in both vegetation cover and burn ratio between 2019 and 2022, consistent with fire-preceded mechanical clearing. ΔNDVI contributes +0.26 and ΔNBR contributes +0.15 to the prediction, together accounting for 82% of the total shift from baseline (0.5) to the final prediction (1.0). All remaining features contribute only +0.01 each, reinforcing the hierarchy seen globally in Figure 11. The waterfall demonstrates that the model's confidence in this pixel is almost entirely driven by the temporal change signal — exactly the physical reasoning we would expect from a well-calibrated deforestation detector.
+This pixel shows strongly negative ΔNDVI (-0.139) and ΔNBR (-0.114), a large drop in both
+vegetation cover and burn ratio between 2019 and 2022, consistent with fire-preceded
+mechanical clearing. ΔNDVI contributes +0.26 and ΔNBR contributes +0.15 to the prediction,
+together accounting for 82% of the total shift from baseline (0.5) to the final prediction
+(1.0). All remaining features contribute only +0.01 each, reinforcing the hierarchy seen
+globally. The waterfall demonstrates that the model's confidence in this pixel is almost
+entirely driven by the temporal change signal, exactly the physical reasoning we would
+expect from a well-calibrated deforestation detector.
 
 ---
+
 ## 10. Environmental Assessment
 
 ### Why Assess the Environmental Cost of Research?
 
-Machine learning is not carbon-neutral. Training models, downloading satellite data, and running 
-large-scale predictions all consume energy — and that energy has a carbon cost. For a project 
-explicitly concerned with environmental degradation, failing to account for its own footprint 
-would be a significant omission. This section reports the full lifecycle carbon cost of the 
+Machine learning is not carbon-neutral. Training models, downloading satellite data, and running
+large-scale predictions all consume energy and that energy has a carbon cost. For a project
+explicitly concerned with environmental degradation, failing to account for its own footprint
+would be a significant omission. This section reports the full lifecycle carbon cost of the
 pipeline and contextualises it against the scale of the environmental problem it is monitoring.
 
 ### Why CodeCarbon?
 
-**CodeCarbon** (Courty et al., 2022) is an open-source Python library that measures CPU and RAM 
-energy consumption in real time and converts it to CO₂ equivalent emissions using the carbon 
+**CodeCarbon** (Courty et al., 2022) is an open-source Python library that measures CPU and RAM
+energy consumption in real time and converts it to CO₂ equivalent emissions using the carbon
 intensity of the local electricity grid. It was selected for three reasons:
 
-- **Measured, not estimated:** CodeCarbon instruments the actual hardware rather than applying 
+- **Measured, not estimated:** CodeCarbon instruments the actual hardware rather than applying
   generic per-hour cloud compute estimates, producing a more honest and reproducible footprint.
-- **Integrated tracking:** Initialised silently at the start of Section 0, it runs continuously 
-  across the full notebook runtime — capturing both training runs, the full-scene tiled prediction, 
-  and the TreeSHAP computation — without requiring manual logging.
-- **Scope 1 specificity:** Unlike broad lifecycle tools, CodeCarbon isolates the direct compute 
-  footprint precisely, allowing the remaining scopes (data transfer, storage) to be calculated 
+- **Integrated tracking:** Initialised silently at the start of Section 0, it runs continuously
+  across the full notebook runtime, capturing both training runs, the full-scene tiled prediction,
+  and the TreeSHAP computation, without requiring manual logging.
+- **Scope 1 specificity:** Unlike broad lifecycle tools, CodeCarbon isolates the direct compute
+  footprint precisely, allowing the remaining scopes (data transfer, storage) to be calculated
   separately using standard LCA factors and combined into a total.
 
 Emissions are assessed across four scopes, following standard lifecycle analysis practice:
 
 | Scope | What it measures | Method |
 |---|---|---|
-| **Scope 1 — Compute** | CPU/RAM energy across the full notebook runtime | CodeCarbon (measured directly) |
-| **Scope 2 — Data transfer** | Two Sentinel-2 SAFE archives (~2.5 GB each) downloaded + Drive upload | 0.06 kWh/GB × 5 GB |
-| **Scope 3/4 — Storage & device** | Google Drive storage and end-user laptop energy | Standard LCA factors |
+| **Scope 1, Compute** | CPU/RAM energy across the full notebook runtime | CodeCarbon (measured directly) |
+| **Scope 2, Data transfer** | Two Sentinel-2 SAFE archives (~2.5 GB each) downloaded and Drive upload | 0.06 kWh/GB x 5 GB |
+| **Scope 3/4, Storage and device** | Google Drive storage and end-user laptop energy | Standard LCA factors |
 
-This four-scope approach captures the full research lifecycle rather than compute alone — 
+This four-scope approach captures the full research lifecycle rather than compute alone,
 a more complete and honest accounting than reporting only training emissions.
 
 ---
@@ -895,214 +1034,213 @@ a more complete and honest accounting than reporting only training emissions.
 </p>
 
 <p align="center">
-  <b>Figure 15 — Environmental Assessment: Project Carbon Footprint.</b><br>
-  Left: emission scope breakdown — Scope 1 (compute) accounts for 69.3% of total emissions, 
+  <b>Figure 20 -</b> Environmental Assessment: Project Carbon Footprint.
+  Left: emission scope breakdown showing Scope 1 (compute) accounts for 69.3% of total emissions,
   Scope 2 (data transfer) 30.7%, and Scope 3/4 (storage) a negligible 0.0%.
   Centre: energy consumption across four CodeCarbon runs.
-  Right: log-scale comparison of research cost (227.88 gCO₂eq) versus forest carbon at risk 
-  (20,866 tCO₂) — a difference of eight orders of magnitude.
+  Right: log-scale comparison of research cost (227.88 gCO₂eq) versus forest carbon at risk
+  (20,866 tCO₂), a difference of eight orders of magnitude.
 </p>
 
 | Scope | Emissions |
 |---|---|
-| Scope 1 — Compute | 157.903 gCO₂eq |
-| Scope 2 — Data transfer | 69.90 gCO₂eq |
-| Scope 3/4 — Storage | 0.076 gCO₂eq |
+| Scope 1, Compute | 157.903 gCO₂eq |
+| Scope 2, Data transfer | 69.90 gCO₂eq |
+| Scope 3/4, Storage | 0.076 gCO₂eq |
 | **Total** | **227.88 gCO₂eq** |
 | Runtime | 0.51 hours |
 | Forest carbon at risk | ~20,866 t CO₂ |
-| **Research:forest ratio** | **1 g CO₂ per 91,567 kg CO₂ monitored** |
+| **Research to forest ratio** | **1 g CO₂ per 91,567 kg CO₂ monitored** |
 
-The total project footprint of **227.88 gCO₂eq** — roughly equivalent to boiling a kettle 
-a handful of times — is negligible relative to the scale of the problem being monitored. 
-The pipeline identified **20,866 tonnes of CO₂** locked in the 1,391 km² of forest flagged 
-as lost between 2019 and 2022, giving a research-to-forest carbon ratio of approximately 
-**1:91,567,000** — for every gram of CO₂ the research emitted, it located over 91,000 kg of 
-forest carbon at risk.
+The total project footprint of **227.88 gCO₂eq**, roughly equivalent to boiling a kettle
+a handful of times, is negligible relative to the scale of the problem being monitored.
+The pipeline identified **20,866 tonnes of CO₂** locked in the 1,391 km² of forest flagged
+as lost between 2019 and 2022, giving a research-to-forest carbon ratio of approximately
+**1:91,567,000**, meaning for every gram of CO₂ the research emitted, it located over
+91,000 kg of forest carbon at risk.
 
-Compute (Scope 1) dominates at 69.3% of total emissions, driven primarily by the Random Forest 
-training runs and the tiled full-scene prediction pass. Data transfer (Scope 2) contributes 30.7%, 
-reflecting the two large Sentinel-2 SAFE archives downloaded from the Copernicus Data Space. 
+Compute (Scope 1) dominates at 69.3% of total emissions, driven primarily by the Random Forest
+training runs and the tiled full-scene prediction pass. Data transfer (Scope 2) contributes 30.7%,
+reflecting the two large Sentinel-2 SAFE archives downloaded from the Copernicus Data Space.
 Storage and device emissions are negligible at effectively 0%.
 
-The use of **Google Colab's CPU-only runtime** — rather than a dedicated GPU cluster — keeps 
-the compute footprint low, though at the cost of runtime (full-scene tiled prediction takes 
-several minutes on CPU). It is important to note that CodeCarbon captures only direct CPU/RAM 
-energy; the embodied carbon of the hardware, Google's data centre infrastructure, and cooling 
-systems are not included. The reported footprint is therefore a **lower bound** on the true 
-lifecycle cost. A full assessment would require data centre-level energy accounting beyond what 
+The use of **Google Colab's CPU-only runtime**, rather than a dedicated GPU cluster, keeps
+the compute footprint low, though at the cost of runtime as full-scene tiled prediction takes
+several minutes on CPU. It is important to note that CodeCarbon captures only direct CPU/RAM
+energy; the embodied carbon of the hardware, Google's data centre infrastructure, and cooling
+systems are not included. The reported footprint is therefore a **lower bound** on the true
+lifecycle cost. A full assessment would require data centre-level energy accounting beyond what
 is available to a notebook-level tool.
 
 ---
 
-### The 'So What' Chain — Five-Level Research Summary
+### The 'So What' Chain
 
 | Level | Question | Finding |
 |---|---|---|
-| **1 — What happened?** | How much forest was lost? | 1,391.1 km² deforested 2019–2022 (≈ 194,829 football pitches) |
-| **2 — How confident?** | Can we trust this estimate? | Exp. B: OA=1.000, κ=1.000, OOB=1.000. Exp. A (independent benchmark): OA=0.538, κ=0.077 — lower accuracy reflects 30 m label resolution mismatch |
-| **3 — Why did the model predict?** | What drove the classification? | SHAP: ΔNDVI dominates (mean \|SHAP\| = 0.2494); two pathways identified — fire-preceded clearing (↑ΔNBR) and direct mechanical clearing (cool ΔNBR) |
-| **4 — What are the limits?** | Where does the model fail? | Exp. B: circularity risk (labels derived from ΔNDVI feature). Exp. A: 30 m → 10 m misalignment and Hansen label lag. Dry-season moisture stress can mimic deforestation signal |
-| **5 — Does cost justify benefit?** | Was the compute worthwhile? | Project emitted 227.9 gCO₂eq to locate 20,866 t CO₂ at risk → ratio 1:91,567,000 |
+| **1, What happened?** | How much forest was lost? | 1,391.1 km² deforested 2019 to 2022 (approximately 194,829 football pitches) |
+| **2, How confident?** | Can we trust this estimate? | Exp. B: OA=1.000, κ=1.000, OOB=1.000. Exp. A (independent benchmark): OA=0.538, κ=0.077, lower accuracy reflects 30 m label resolution mismatch |
+| **3, Why did the model predict?** | What drove the classification? | SHAP: ΔNDVI dominates (mean |SHAP| = 0.2494); two pathways identified, fire-preceded clearing (↑ΔNBR) and direct mechanical clearing (cool ΔNBR) |
+| **4, What are the limits?** | Where does the model fail? | Exp. B: circularity risk (labels derived from ΔNDVI feature). Exp. A: 30 m to 10 m misalignment and Hansen label lag. Dry-season moisture stress can mimic deforestation signal |
+| **5, Does cost justify benefit?** | Was the compute worthwhile? | Project emitted 227.9 gCO₂eq to locate 20,866 t CO₂ at risk, ratio 1:91,567,000 |
 
 ---
-
 ## 11. Discussion, Limitations & Future Work
 
 ### Discussion
 
-#### What the results tell us:
+#### What the results tell us
 
-The central finding of this project is not simply that 1,391 km² of forest was lost in 
-Rondônia between 2019 and 2022 — it is that a lightweight, interpretable machine learning 
-pipeline running on a single CPU in under an hour can locate over 20,000 tonnes of carbon 
-at risk, explain every prediction it makes, and honestly account for the methodological 
+The central finding of this project is not simply that 1,391 km² of forest was lost in
+Rondônia between 2019 and 2022. It is that a lightweight, interpretable machine learning
+pipeline running on a single CPU in under an hour can locate over 20,000 tonnes of carbon
+at risk, explain every prediction it makes, and honestly account for the methodological
 trade-offs involved in doing so.
 
-The four components of the pipeline — Experiment A, Experiment B, the full-scene prediction 
-map, and TreeSHAP — are not independent results. They are complementary, and their value 
+The four components of the pipeline, Experiment A, Experiment B, the full-scene prediction
+map, and TreeSHAP, are not independent results. They are complementary, and their value
 comes from reading them together.
 
-#### How the experiments complement each other:
+#### How the experiments complement each other
 
-Experiment A and Experiment B are often tempting to interpret as a failure and a success 
-respectively. This misses the point. Experiment A's near-chance accuracy (OA = 0.538, 
-κ = 0.077) is not a model failure — it is a precise quantification of what happens when 
-training labels are spatially misaligned with the imagery they supervise. The 30 m → 10 m 
-resolution mismatch between Hansen GFC and Sentinel-2 causes genuine deforestation signal 
-to be mislabelled as stable forest, and the model cannot overcome this regardless of 
-classifier quality. This is a finding that is widely acknowledged in the remote sensing 
+Experiment A and Experiment B are often tempting to interpret as a failure and a success
+respectively. This misses the point. Experiment A's near-chance accuracy (OA = 0.538,
+κ = 0.077) is not a model failure. It is a precise quantification of what happens when
+training labels are spatially misaligned with the imagery they supervise. The 30 m to 10 m
+resolution mismatch between Hansen GFC and Sentinel-2 causes genuine deforestation signal
+to be mislabelled as stable forest, and the model cannot overcome this regardless of
+classifier quality. This is a finding that is widely acknowledged in the remote sensing
 literature but rarely demonstrated so clearly in a single project.
 
-Experiment B recovers perfect accuracy (OA = 1.000, κ = 1.000) by eliminating the 
-resolution mismatch — but at the cost of label independence. Because the ΔNDVI threshold 
-labels are derived from the same data the model is trained on, the high accuracy partially 
-reflects the model learning to approximate the threshold function rather than a fully 
-generalised representation of deforestation. Experiment B is not a better experiment than 
-Experiment A — it is a different trade-off, and its results must be interpreted in that 
+Experiment B recovers perfect accuracy (OA = 1.000, κ = 1.000) by eliminating the
+resolution mismatch, but at the cost of label independence. Because the ΔNDVI threshold
+labels are derived from the same data the model is trained on, the high accuracy partially
+reflects the model learning to approximate the threshold function rather than a fully
+generalised representation of deforestation. Experiment B is not a better experiment than
+Experiment A. It is a different trade-off, and its results must be interpreted in that
 context.
 
-Together, the two experiments bracket the problem honestly: Experiment A shows the cost 
-of principled, independent labelling under resolution mismatch; Experiment B shows the 
-benefit of spatial alignment at the cost of circularity. Neither alone is sufficient — 
-both together produce a methodological discussion that is more rigorous than either 
+Together, the two experiments bracket the problem honestly. Experiment A shows the cost
+of principled, independent labelling under resolution mismatch; Experiment B shows the
+benefit of spatial alignment at the cost of circularity. Neither alone is sufficient,
+but both together produce a methodological discussion that is more rigorous than either
 experiment could support independently.
 
-#### How the prediction map and TreeSHAP complement the experiments:
+#### How the prediction map and TreeSHAP complement the experiments
 
-The full-scene prediction map (Figure 10) applies the Experiment B model to the complete 
-~10,980 × 10,980 pixel Sentinel-2 tile and produces a spatially explicit deforestation 
-map resolving the fishbone clearance patterns along the BR-364 corridor at 10 m resolution. 
-This is the operational output — the thing a conservation organisation or government agency 
-could actually use. But without the TreeSHAP analysis, it would be a black-box map: 
+The full-scene prediction map applies the Experiment B model to the complete
+10,980 x 10,980 pixel Sentinel-2 tile and produces a spatially explicit deforestation
+map resolving the fishbone clearance patterns along the BR-364 corridor at 10 m resolution.
+This is the operational output, the thing a conservation organisation or government agency
+could actually use. But without the TreeSHAP analysis, it would be a black-box map,
 accurate (within the limits of Experiment B), but uninterpretable and unverifiable.
 
-TreeSHAP closes this gap. By confirming that ΔNDVI dominates predictions at mean 
-|SHAP| = 0.2494 — nearly double the next feature — it validates that the model is 
-responding to the temporal vegetation loss signal rather than to spurious spectral 
-correlations. The SHAP dependence plot goes further, revealing that the model captures 
-two physically distinct deforestation pathways (fire-preceded and direct mechanical 
-clearing) without ever being explicitly trained to distinguish them. This is a level of 
-interpretability that standard accuracy metrics cannot provide, and it substantially 
-increases confidence in the full-scene map as a physically meaningful product rather than 
+TreeSHAP closes this gap. By confirming that ΔNDVI dominates predictions at mean
+|SHAP| = 0.2494, nearly double the next feature, it validates that the model is
+responding to the temporal vegetation loss signal rather than to spurious spectral
+correlations. The SHAP dependence plot goes further, revealing that the model captures
+two physically distinct deforestation pathways (fire-preceded and direct mechanical
+clearing) without ever being explicitly trained to distinguish them. This is a level of
+interpretability that standard accuracy metrics cannot provide, and it substantially
+increases confidence in the full-scene map as a physically meaningful product rather than
 a statistical artefact.
 
-The environmental assessment adds a final layer: the pipeline emitted 227.88 gCO₂eq to 
-produce this analysis — a research-to-forest carbon ratio of 1:91,567,000. For a project 
-about forest carbon loss, this accountability is not merely procedural; it is part of the 
+The environmental assessment adds a final layer: the pipeline emitted 227.88 gCO₂eq to
+produce this analysis, a research-to-forest carbon ratio of 1:91,567,000. For a project
+about forest carbon loss, this accountability is not merely procedural; it is part of the
 scientific argument.
 
 ---
 
 ### Limitations
 
-**Hansen GFC resolution mismatch.** The 30 m resolution of the Hansen Global Forest 
-Change dataset is the primary constraint on Experiment A. When resampled to the 10 m 
-Sentinel-2 grid via nearest-neighbour interpolation, each Hansen pixel maps to nine 
-Sentinel-2 pixels, creating blocky label boundaries that do not align with spectral edges 
-in the imagery. Fine-scale clearance events — narrow road incursions, small agricultural 
-plots, edge degradation — that are clearly visible at 10 m are routinely mislabelled as 
-stable forest. This is not a fixable problem within the current framework; it requires 
-either higher-resolution external labels or a fundamentally different approach to 
+**Hansen GFC resolution mismatch.** The 30 m resolution of the Hansen Global Forest
+Change dataset is the primary constraint on Experiment A. When resampled to the 10 m
+Sentinel-2 grid via nearest-neighbour interpolation, each Hansen pixel maps to nine
+Sentinel-2 pixels, creating blocky label boundaries that do not align with spectral edges
+in the imagery. Fine-scale clearance events, narrow road incursions, small agricultural
+plots and edge degradation that are clearly visible at 10 m are routinely mislabelled as
+stable forest. This is not a fixable problem within the current framework; it requires
+either higher-resolution external labels or a fundamentally different approach to
 cross-sensor label transfer.
 
-**Circularity in Experiment B.** Deriving training labels from ΔNDVI thresholding and 
-then using ΔNDVI as a training feature creates a circular dependency. The model's perfect 
-accuracy on the held-out test set partially reflects learning to approximate the threshold 
-function, not necessarily a generalised representation of deforestation. Performance on 
-out-of-domain imagery — a different sensor, region, or year — would likely be 
-substantially lower. This limitation is inherent to self-supervised labelling and is 
+**Circularity in Experiment B.** Deriving training labels from ΔNDVI thresholding and
+then using ΔNDVI as a training feature creates a circular dependency. The model's perfect
+accuracy on the held-out test set partially reflects learning to approximate the threshold
+function, not necessarily a generalised representation of deforestation. Performance on
+out-of-domain imagery, a different sensor, region, or year, would likely be
+substantially lower. This limitation is inherent to self-supervised labelling and is
 reported transparently rather than concealed.
 
-**CodeCarbon runtime scope.** CodeCarbon captures CPU and RAM energy consumption at the 
-notebook level — it does not account for the embodied carbon of the hardware, Google's 
-data centre infrastructure, networking equipment, or cooling systems. The reported 
-footprint of 227.88 gCO₂eq is therefore a lower bound on the true lifecycle cost. 
-Additionally, the 0.51-hour runtime reflects a single full pipeline execution; 
-development iterations, failed runs, and exploratory analysis conducted prior to the 
+**CodeCarbon runtime scope.** CodeCarbon captures CPU and RAM energy consumption at the
+notebook level. It does not account for the embodied carbon of the hardware, Google's
+data centre infrastructure, networking equipment, or cooling systems. The reported
+footprint of 227.88 gCO₂eq is therefore a lower bound on the true lifecycle cost.
+Additionally, the 0.51-hour runtime reflects a single full pipeline execution;
+development iterations, failed runs, and exploratory analysis conducted prior to the
 final notebook run are not captured. The true research footprint is higher than reported.
 
-**Using the imagery itself to generate training labels.** Both the circularity limitation 
-in Experiment B and the resolution mismatch in Experiment A are manifestations of a 
-deeper problem: there is no truly independent, high-resolution ground truth available 
-for this tile at this time period. The pipeline is therefore training and evaluating on 
-data that is never fully independent from the features it uses. A rigorous evaluation 
-would require field-verified deforestation polygons or very high resolution commercial 
-imagery as an independent reference — neither of which was available within the scope 
+**Using the imagery itself to generate training labels.** Both the circularity limitation
+in Experiment B and the resolution mismatch in Experiment A are manifestations of a
+deeper problem: there is no truly independent, high-resolution ground truth available
+for this tile at this time period. The pipeline is therefore training and evaluating on
+data that is never fully independent from the features it uses. A rigorous evaluation
+would require field-verified deforestation polygons or very high resolution commercial
+imagery as an independent reference, neither of which was available within the scope
 of this project.
 
-**Single-date change detection.** Comparing two dry-season snapshots three years apart 
-cannot detect forest that was cleared and partially regrew within the window, nor 
-distinguish abrupt clearing from gradual degradation. Any seasonal browning in 2022 
-not present in 2019 risks generating false positives. A time-series approach using 
+**Single-date change detection.** Comparing two dry-season snapshots three years apart
+cannot detect forest that was cleared and partially regrew within the window, nor
+distinguish abrupt clearing from gradual degradation. Any seasonal browning in 2022
+not present in 2019 risks generating false positives. A time-series approach using
 annual composites would substantially reduce both omission and commission errors.
 
 ---
 
 ### Future Work
 
-#### General direction:
+#### General direction
 
-The most impactful next step for this pipeline would be replacing the self-supervised 
-ΔNDVI labels with a higher-resolution, independent reference product. The Brazil PRODES 
-annual deforestation polygon dataset — produced by INPE at resolutions compatible with 
-Sentinel-2 — would eliminate the resolution mismatch of Experiment A while retaining 
-label independence, resolving both of the core labelling limitations simultaneously. 
-Extending the pipeline to a time-series framework using annual dry-season Sentinel-2 
-composites across the full 2019–2022 window would replace the binary change detection 
-approach with a continuous monitoring system capable of detecting gradual degradation, 
+The most impactful next step for this pipeline would be replacing the self-supervised
+ΔNDVI labels with a higher-resolution, independent reference product. The Brazil PRODES
+annual deforestation polygon dataset, produced by INPE at resolutions compatible with
+Sentinel-2, would eliminate the resolution mismatch of Experiment A while retaining
+label independence, resolving both of the core labelling limitations simultaneously.
+Extending the pipeline to a time-series framework using annual dry-season Sentinel-2
+composites across the full 2019 to 2022 window would replace the binary change detection
+approach with a continuous monitoring system capable of detecting gradual degradation,
 seasonal recovery, and secondary regrowth.
 
-More broadly, the dual-experiment design could be formalised as a reusable benchmarking 
-framework for evaluating label quality in any supervised deforestation mapping context — 
-not just Rondônia. The gap between Experiment A and Experiment B accuracy provides a 
-quantitative measure of label-induced performance loss that could guide sensor and 
+More broadly, the dual-experiment design could be formalised as a reusable benchmarking
+framework for evaluating label quality in any supervised deforestation mapping context,
+not just Rondônia. The gap between Experiment A and Experiment B accuracy provides a
+quantitative measure of label-induced performance loss that could guide sensor and
 resolution choices for future monitoring systems.
 
-#### Specific project suggestions:
+#### Specific project suggestions
 
-**Cross-state generalisation.** Train the Experiment B model on the BR-364 corridor 
-tile and test on a spatially disjoint Sentinel-2 tile in Pará or Mato Grosso — states 
-with different deforestation drivers and land cover contexts. A significant accuracy 
-drop would confirm the circularity concern; robustness would suggest the model has 
+**Cross-state generalisation.** Train the Experiment B model on the BR-364 corridor
+tile and test on a spatially disjoint Sentinel-2 tile in Pará or Mato Grosso, states
+with different deforestation drivers and land cover contexts. A significant accuracy
+drop would confirm the circularity concern; robustness would suggest the model has
 learned transferable physical representations.
 
-**Fire pathway mapping.** The SHAP dependence plot identifies fire-preceded clearing 
-as a distinct subgroup within the deforested class. Cross-referencing these pixels 
-spatially against INPE's BDQueimadas active fire database would test whether the 
-ΔNBR-warm cluster corresponds to documented burn locations — providing independent 
+**Fire pathway mapping.** The SHAP dependence plot identifies fire-preceded clearing
+as a distinct subgroup within the deforested class. Cross-referencing these pixels
+spatially against INPE's BDQueimadas active fire database would test whether the
+ΔNBR-warm cluster corresponds to documented burn locations, providing independent
 validation of the SHAP interaction finding.
 
-**Near-real-time monitoring.** Sentinel-2's 5-day revisit frequency opens the 
-possibility of a near-real-time alert system: flag any pixel where ΔNDVI drops below 
-the deforestation threshold in any new acquisition relative to a stable baseline 
-composite. This would convert the pipeline from a retrospective change detection tool 
-into an operational early-warning system compatible with existing platforms such as 
+**Near-real-time monitoring.** Sentinel-2's 5-day revisit frequency opens the
+possibility of a near-real-time alert system, flagging any pixel where ΔNDVI drops below
+the deforestation threshold in any new acquisition relative to a stable baseline
+composite. This would convert the pipeline from a retrospective change detection tool
+into an operational early-warning system compatible with existing platforms such as
 Global Forest Watch.
 
-**Higher-resolution labels.** Replacing Hansen GFC with Planet NICFI monthly mosaics 
-at 4.77 m resolution — freely available for tropical forest monitoring — would 
-eliminate the resolution mismatch entirely and allow Experiment A to be re-run with 
+**Higher-resolution labels.** Replacing Hansen GFC with Planet NICFI monthly mosaics
+at 4.77 m resolution, freely available for tropical forest monitoring, would
+eliminate the resolution mismatch entirely and allow Experiment A to be re-run with
 truly independent, spatially aligned labels for a direct comparison against Experiment B.
 
 ---
@@ -1113,6 +1251,7 @@ truly independent, spatially aligned labels for a direct comparison against Expe
 > **[Watch on YouTube](https://youtu.be/vRJaEF1xlvc)**
 
 [![Watch the video](https://img.youtube.com/vi/vRJaEF1xlvc/maxresdefault.jpg)](https://youtu.be/vRJaEF1xlvc)
+
 ---
 
 ## 13. Acknowledgements
@@ -1120,13 +1259,13 @@ truly independent, spatially aligned labels for a direct comparison against Expe
 This project was completed as part of the **GEOL0069 — AI for Earth Observation** module 
 at University College London, 2025/26.
 
-I would like to thank **[Dr Michel Tsamados]** 
+I would like to thank **Dr Michel Tsamados** 
 for designing and delivering the GEOL0069 module and for his guidance and support throughout 
-the course. I would also like to thank PhD supervisors **Weibin Chen** and **Shambhu** for 
+the course. I would also like to thank PhD supervisors **Weibin** and **Shambhu** for 
 their support and feedback during the project.
 
-This project was also inspired by **Michael Telespher's** example project — *Monitoring 
-Palm Oil-Driven Deforestation in Borneo Through K-means Analysis of Satellite Data* — 
+This project was also inspired by **Michael Telespher's** example project *Monitoring 
+Palm Oil-Driven Deforestation in Borneo Through K-means Analysis of Satellite Data*
 produced as part of the GEOL0069 course. His work on satellite-based deforestation 
 detection in a tropical context provided a valuable reference point for the approach 
 taken here, though the methodology, study area, and analytical framework of this project 
@@ -1148,70 +1287,39 @@ tracking is provided by the open-source **CodeCarbon** library (Courty et al., 2
 
 ## 14. References
 
-Breiman, L. (2001). Random Forests. *Machine Learning*, 45, 5–32.
-https://doi.org/10.1023/A:1010933404324
+Breiman, L. (2001) 'Random forests', *Machine Learning*, 45(1), pp. 5–32. doi:10.1023/a:1010933404324.
 
-Courty, V., Schmidt, V., Goyal-Kamal, Coutrier, M., Lottick, K., Goyal, S., et al. (2022).
-*CodeCarbon: Estimate and Track Carbon Emissions from Machine Learning Computing.*
-https://doi.org/10.48550/arXiv.2306.05323
+Courty, V., Schmidt, V., Goyal-Kamal, Coutrier, M., Lottick, K., et al. (2022) *CodeCarbon: Estimate and Track Carbon Emissions from Machine Learning Computing*. CodeCarbon. Available at: https://codecarbon.io (Accessed: 01 June 2026).
 
-ESA (2021). *Sentinel-2 User Handbook.* European Space Agency.
-https://sentinel.esa.int/documents/247904/685211/Sentinel-2_User_Handbook
+ESA (2015) *Sentinel-2*. European Space Agency. Available at: https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Sentinel-2 (Accessed: 27 May 2026).
 
-Fearnside, P. M., & Salati, E. (1985). Explosive deforestation in Rondônia, Brazil.
-*Environmental Conservation*, 12(4), 355–356.
+Fearnside, P.M. and Salati, E. (1985) 'Explosive deforestation in Rondônia, Brazil', *Environmental Conservation*, 12(4), pp. 355–356. doi:10.1017/s0376892900034482.
 
-Gatti, L. V., Basso, L. S., Miller, J. B., Gloor, M., Gatti Domingues, L., Cassol, H. L. G.,
-et al. (2021). Amazonia as a carbon source linked to deforestation and climate change.
-*Nature*, 595, 388–393. https://doi.org/10.1038/s41586-021-03629-6
+Gatti, L.V., Basso, L.S., Miller, J.B. et al. (2021) 'Amazonia as a carbon source linked to deforestation and climate change', *Nature*, 595, pp. 388–393. doi:10.1038/s41586-021-03629-6.
 
-Hansen, M. C., Potapov, P. V., Moore, R., Hancher, M., Turubanova, S. A., Tyukavina, A.,
-et al. (2013). High-resolution global maps of 21st-century forest cover change.
-*Science*, 342(6160), 850–853. https://doi.org/10.1126/science.1244693
+Hansen, M.C. et al. (2013) 'High-resolution global maps of 21st-century forest cover change', *Science*, 342(6160), pp. 850–853. doi:10.1126/science.1244693.
 
-Lovejoy, T. E., & Nobre, C. (2018). Amazon tipping point.
-*Science Advances*, 4(2), eaat2340. https://doi.org/10.1126/sciadv.aat2340
+Lovejoy, T.E. and Nobre, C. (2018) 'Amazon tipping point', *Science Advances*, 4(2). doi:10.1126/sciadv.aat2340.
 
-Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., et al. (2020).
-From local explanations to global understanding with explainable AI for trees.
-*Nature Machine Intelligence*, 2, 56–67. https://doi.org/10.1038/s42256-019-0138-9
+Lundberg, S.M. et al. (2020) 'From local explanations to global understanding with explainable AI for trees', *Nature Machine Intelligence*, 2(1), pp. 56–67. doi:10.1038/s42256-019-0138-9.
 
-MAAP (Monitoring of the Andean Amazon Project). (2022). *MAAP #164: Amazon Tipping Point —
-Where Are We?* https://www.maaproject.org/2022/amazon-tipping-point/
+Maxwell, A.E., Warner, T.A. and Fang, F. (2018) 'Implementation of machine-learning classification in remote sensing: An applied review', *International Journal of Remote Sensing*, 39(9), pp. 2784–2817. doi:10.1080/01431161.2018.1433343.
 
-Maxwell, A. E., Warner, T. A., & Fang, F. (2018). Implementation of machine-learning
-classification in remote sensing: An applied review.
-*International Journal of Remote Sensing*, 39(9), 2784–2817.
-https://doi.org/10.1080/01431161.2018.1433343
+NASA Earth Observatory (2025) *Seeing forests for the trees and the carbon: Mapping the world's forests in three dimensions*. NASA. Available at: https://science.nasa.gov/earth/earth-observatory/forest-carbon-mapping-worlds-forests-in-three-dimensions/ (Accessed: 02 June 2026).
 
-NASA Earth Observatory. (2006). *Seeing Forests for the Trees and the Carbon: Mapping the
-World's Forests in Three Dimensions.* https://earthobservatory.nasa.gov
+Pedlowski, M.A. et al. (2005) 'Conservation units: A new deforestation frontier in the Amazonian state of Rondônia, Brazil', *Environmental Conservation*, 32(2), pp. 149–155. doi:10.1017/s0376892905002134.
 
-Pedlowski, M. A., Dale, V. H., Matricardi, E. A. T., & da Silva Filho, E. P. (2005).
-Patterns and impacts of deforestation in Rondônia, Brazil.
-*Landscape and Urban Planning*, 38(3–4), 149–157.
+RAISG (2022) *Archives: Pressures and threats*. Amazon Geo-Referenced Socio-Environmental Information Network. Available at: https://www.raisg.org/en/categoria_da_publicacao/pressures-and-threats/ (Accessed: 01 June 2026).
 
-RAISG (Amazon Geo-Referenced Socio-Environmental Information Network). (2022).
-*Amazon under Pressure 2022.* https://www.amazoniasocioambiental.org/
+Roberts, D.A. et al. (2002) 'Large area mapping of land-cover change in Rondônia using multitemporal spectral mixture analysis and decision tree classifiers', *Journal of Geophysical Research: Atmospheres*, 107(D20). doi:10.1029/2001jd000374.
 
-Roberts, D. A., Numata, I., Holmes, K., Batista, G., Krug, T., Monteiro, A., et al. (2002).
-Large area mapping of land-cover change in Rondônia using multitemporal spectral mixture
-analysis and decision tree classifiers.
-*Journal of Geophysical Research: Atmospheres*, 107(D20), LBA 41-1.
+Skole, D. and Tucker, C. (1993) 'Tropical deforestation and habitat fragmentation in the Amazon: Satellite data from 1978 to 1988', *Science*, 260(5116), pp. 1905–1910. doi:10.1126/science.260.5116.1905.
 
-Shapley, L. S. (1953). A value for n-person games. In H. W. Kuhn & A. W. Tucker (Eds.),
-*Contributions to the Theory of Games* (Vol. 2, pp. 307–317). Princeton University Press.
+Stone, T.A., Schlesinger, P., Houghton, R. and Woodwell, G. (1994) 'A map of vegetation of South America based on satellite imagery', *Photogrammetric Engineering and Remote Sensing*, 60, pp. 541–551.
 
-Skole, D., & Tucker, C. (1993). Tropical deforestation and habitat fragmentation in the
-Amazon: Satellite data from 1978 to 1988. *Science*, 260(5116), 1905–1910.
+Thomson, J. (2023) *Deforestation of Rondônia, Brazil*. NASA Scientific Visualization Studio. Available at: https://svs.gsfc.nasa.gov/2116 (Accessed: 23 May 2026).
 
-Stone, T. A., Schlesinger, P., Houghton, R. A., & Woodwell, G. M. (1991). A map of the
-vegetation of South America based on satellite imagery.
-*Photogrammetric Engineering and Remote Sensing*, 57(4), 395–400.
-
-Tyukavina, A., Hansen, M. C., Potapov, P., Parker, D., Okpa, C., Turubanova, S., et al.
-(2017). Congo Basin forest loss dominated by increasing smallholder clearing.
-*Science Advances*, 3(11), e1602477.
+Tyukavina, A. et al. (2017) 'Types and rates of forest disturbance in Brazilian Legal Amazon, 2000–2013', *Science Advances*, 3(4). doi:10.1126/sciadv.1601047.
 
 ---
 
