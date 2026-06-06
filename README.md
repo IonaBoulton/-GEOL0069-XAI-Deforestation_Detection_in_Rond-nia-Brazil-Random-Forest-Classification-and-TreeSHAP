@@ -1108,11 +1108,11 @@ truly independent, spatially aligned labels for a direct comparison against Expe
 ---
 
 ## 12. Video Walkthrough
+🎬 A video walkthrough of this project — covering the problem motivation, pipeline structure, key results, and TreeSHAP explainability — is available here:
 
-🎬 A video walkthrough of this project is available here:
+> **[Watch on YouTube](https://youtu.be/vRJaEF1xlvc)**
 
-> **[Link to be added]**
-> 
+[![Watch the video](https://img.youtube.com/vi/vRJaEF1xlvc/maxresdefault.jpg)](https://youtu.be/vRJaEF1xlvc)
 ---
 
 ## 13. Acknowledgements
